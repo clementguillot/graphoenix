@@ -2,7 +2,7 @@ apiVersion: v2
 name: graphoenix
 description: Graphoenix Helm Chart
 type: application
-version: "0.6.0"
+version: "0.6.1"
 appVersion: "v0.6.0"
 keywords:
   - graphoenix

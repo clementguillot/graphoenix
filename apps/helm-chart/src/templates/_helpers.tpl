@@ -37,22 +37,22 @@ Create the embedded MinIO S3 settings.
 */}}
 {{- define "graphoenix.server.s3.settings" -}}
 {{- if .Values.minio.enabled -}}
-- name: NX_SERVER_STORAGE_TYPE
+- name: GRAPHOENIX_SERVER_STORAGE_TYPE
   value: "s3"
-- name: NX_SERVER_STORAGE_S3_ENDPOINT
+- name: GRAPHOENIX_SERVER_STORAGE_S3_ENDPOINT
   value: "http://{{ template "graphoenix.name" . }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000"
-- name: NX_SERVER_STORAGE_S3_REGION
+- name: GRAPHOENIX_SERVER_STORAGE_S3_REGION
   value: "us-east-1"
-- name: NX_SERVER_STORAGE_S3_BUCKET
+- name: GRAPHOENIX_SERVER_STORAGE_S3_BUCKET
   value: "graphoenix"
-- name: NX_SERVER_STORAGE_S3_FORCE_PATH_STYLE
+- name: GRAPHOENIX_SERVER_STORAGE_S3_FORCE_PATH_STYLE
   value: "true"
-- name: NX_SERVER_STORAGE_S3_ACCESS_KEY_ID
+- name: GRAPHOENIX_SERVER_STORAGE_S3_ACCESS_KEY_ID
   valueFrom:
     secretKeyRef:
       name: {{ template "graphoenix.name" . }}-minio
       key: root-user
-- name: NX_SERVER_STORAGE_S3_SECRET_ACCESS_KEY
+- name: GRAPHOENIX_SERVER_STORAGE_S3_SECRET_ACCESS_KEY
   valueFrom:
     secretKeyRef:
       name: {{ template "graphoenix.name" . }}-minio

@@ -57,7 +57,7 @@ spec:
           {{- with (concat .Values.global.env .Values.server.env) }}
             {{- toYaml . | nindent 10 }}
           {{- end }}
-          - name: NX_SERVER_CONFIGURATION_APPLICATION_URL
+          - name: GRAPHOENIX_SERVER_CONFIGURATION_APPLICATION_URL
             value: {{ .Values.global.domain }}
           - name: QUARKUS_MONGODB_CONNECTION_STRING
             {{- include "graphoenix.server.database.connection-string" . | nindent 12 }}
