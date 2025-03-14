@@ -1,11 +1,11 @@
+package org.graphoenix.server.persistence.codec
+
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 import org.bson.codecs.configuration.CodecRegistry
-import org.graphoenix.server.persistence.codec.readRequiredField
-import org.graphoenix.server.persistence.codec.writeRequiredField
 import org.graphoenix.server.persistence.entity.RunEntity
 
 class ProjectCodec(

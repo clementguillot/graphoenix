@@ -6,7 +6,7 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.uint
 import io.quarkus.runtime.Quarkus
-import org.graphoenix.server.presentation.command.CleanupCommand
+import org.graphoenix.server.presentation.cli.CleanupCommand
 
 class Server : CliktCommand() {
   override val invokeWithoutSubcommand = true

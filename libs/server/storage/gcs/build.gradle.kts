@@ -5,6 +5,7 @@ plugins {
   kotlin("plugin.allopen")
   id("io.quarkus")
   id("com.diffplug.spotless")
+  id("org.jetbrains.kotlinx.kover")
 }
 
 repositories {
@@ -36,7 +37,6 @@ dependencies {
   testImplementation("io.mockk:mockk:$mockkVersion")
   testImplementation("io.quarkus:quarkus-config-yaml")
   testImplementation("io.quarkus:quarkus-junit5")
-  testImplementation("io.quarkus:quarkus-jacoco")
   testImplementation("org.testcontainers:testcontainers:$testContainerVersion")
 }
 
@@ -54,6 +54,7 @@ tasks.withType<Jar> {
 
 tasks.withType<Test> {
   systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+  finalizedBy("koverXmlReport")
 }
 
 allOpen {

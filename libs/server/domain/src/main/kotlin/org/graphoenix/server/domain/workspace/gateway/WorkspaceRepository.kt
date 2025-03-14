@@ -1,16 +1,19 @@
 package org.graphoenix.server.domain.workspace.gateway
 
-import io.smallrye.mutiny.Uni
-import org.graphoenix.server.domain.organization.model.OrganizationId
-import org.graphoenix.server.domain.workspace.model.Workspace
-import org.graphoenix.server.domain.workspace.usecase.CreateOrgAndWorkspaceRequest
-import org.graphoenix.server.domain.workspace.usecase.CreateWorkspaceRequest
+import org.graphoenix.server.domain.workspace.entity.Workspace
+import org.graphoenix.server.domain.workspace.valueobject.OrganizationId
+import java.time.LocalDateTime
 
 interface WorkspaceRepository {
-  suspend fun create(workspace: CreateWorkspaceRequest): Workspace
-
-  fun create(
-    request: CreateOrgAndWorkspaceRequest,
+  suspend fun create(
+    name: String,
     orgId: OrganizationId,
-  ): Uni<Workspace>
+  ): Workspace
+
+  suspend fun create(
+    name: String,
+    installationSource: String,
+    nxInitDate: LocalDateTime,
+    orgId: OrganizationId,
+  ): Workspace
 }

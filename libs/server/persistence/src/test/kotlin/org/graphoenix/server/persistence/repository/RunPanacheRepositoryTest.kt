@@ -1,19 +1,24 @@
 package org.graphoenix.server.persistence.repository
 
+import ch.tutteli.atrium.api.fluent.en_GB.its
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
-import io.smallrye.mutiny.coroutines.asFlow
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.bson.types.ObjectId
+import org.graphoenix.server.domain.run.command.CreateRunCommand
+import org.graphoenix.server.domain.run.entity.Run
+import org.graphoenix.server.domain.run.valueobject.*
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.graphoenix.server.persistence.entity.RunEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import java.util.*
 
 @QuarkusTest
 class RunPanacheRepositoryTest {
@@ -28,37 +33,162 @@ class RunPanacheRepositoryTest {
   }
 
   @Test
-  fun `should persist new entity`() =
+  fun `should create a new run in the DB`() =
     runTest {
-      val runEntity = buildRunEntity()
-      runPanacheRepository.persist(runEntity).awaitSuspending()
+      // Given
+      val workspaceId = WorkspaceId(ObjectId().toString())
+      val runRequest =
+        CreateRunCommand(
+          command = "nx test apps/server",
+          startTime = LocalDateTime.now(),
+          endTime = LocalDateTime.now(),
+          branch = "main",
+          runGroup = "",
+          inner = false,
+          distributedExecutionId = null,
+          ciExecutionId = null,
+          ciExecutionEnv = null,
+          machineInfo =
+            MachineInfo(
+              machineId = "machine-id",
+              platform = "junit",
+              version = "42",
+              cpuCores = 42,
+            ),
+          meta = mapOf("nxCloudVersion" to "123"),
+          vcsContext =
+            VcsContext(
+              branch = "main",
+              ref = null,
+              title = null,
+              headSha = null,
+              baseSha = null,
+              commitLink = null,
+              author = "clement guillot",
+              authorUrl = null,
+              authorAvatarUrl = null,
+              repositoryUrl = "https://github.com/clementguillot/graphoenix",
+              platformName = "JUNIT",
+            ),
+          linkId = "test-link",
+          projectGraph =
+            ProjectGraph(
+              nodes =
+                mapOf(
+                  "apps/server" to
+                    ProjectGraph.Project(
+                      type = "application",
+                      name = "apps/server",
+                      data =
+                        ProjectGraph.Project.ProjectConfiguration(
+                          root = "root",
+                          sourceRoot = "root",
+                          metadata =
+                            ProjectGraph.Project.ProjectConfiguration.ProjectMetadata(
+                              description = null,
+                              technologies = null,
+                              targetGroups = null,
+                            ),
+                          targets =
+                            mapOf(
+                              "build" to
+                                ProjectGraph.Project.ProjectConfiguration.TargetConfiguration(
+                                  executor = "@nx/angular:ng-packagr-lite",
+                                  command = null,
+                                  outputs = listOf("^build", "build"),
+                                  dependsOn = null,
+                                  inputs = listOf("production", "^production"),
+                                  options = null,
+                                  configurations = null,
+                                  defaultConfiguration = null,
+                                  cache = null,
+                                  parallelism = null,
+                                  syncGenerators = null,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+              dependencies =
+                mapOf(
+                  "apps/server" to
+                    listOf(
+                      ProjectGraph.Dependency(source = "apps/server", target = "libs/server/domain", type = "static"),
+                    ),
+                ),
+            ),
+          hashedContributors = null,
+          sha = null,
+        )
 
-      val count = runPanacheRepository.count().awaitSuspending()
+      // When
+      val result = runPanacheRepository.create(runRequest, RunStatus.SUCCESS, workspaceId)
 
-      expect(count).toEqual(1)
+      // Then
+      expect(result) {
+        its { linkId }.toEqual("test-link")
+        its { command }.toEqual("nx test apps/server")
+      }
+      expect(runPanacheRepository.count().awaitSuspending()).toEqual(1L)
     }
 
   @Test
-  fun `should find entities with 'endTime' older than input`() =
+  fun `should find all runs by their end date from the DB`() =
     runTest {
-      val olderDate = LocalDateTime.now().minusDays(5)
-      runPanacheRepository.persist(listOf(buildRunEntity())).awaitSuspending()
-      runPanacheRepository.persist(listOf(buildRunEntity(olderDate))).awaitSuspending()
+      // Given
+      val dummyRuns =
+        listOf(
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+        )
+      val thresholdDate = LocalDateTime.now()
+      runPanacheRepository.persist(dummyRuns).awaitSuspending()
 
-      val result = runPanacheRepository.findAllByEndTimeLowerThan(LocalDateTime.now().minusDays(1)).asFlow().toList()
-      val totalCount = runPanacheRepository.count().awaitSuspending()
+      // When
+      val result = runPanacheRepository.findAllByCreationDateOlderThan(thresholdDate).toList()
 
-      expect(result.size).toEqual(1)
-      expect(result[0].endTime < LocalDateTime.now().minusDays(1)).toEqual(true)
-      expect(totalCount).toEqual(2)
+      // Then
+      expect(result.size).toEqual(2)
     }
 
-  fun buildRunEntity(endTime: LocalDateTime = LocalDateTime.now()): RunEntity =
+  @Test
+  fun `should delete a run by its ID from the DB`() =
+    runTest {
+      // Given
+      val dummyRunId = ObjectId()
+      val dummyRun =
+        Run {
+          id(dummyRunId.toString())
+          workspaceId(UUID.randomUUID().toString())
+          command = "test command"
+          status = RunStatus.SUCCESS
+          startTime = LocalDateTime.now()
+          endTime = LocalDateTime.now()
+          runGroup = "group"
+          inner = true
+          machineInfo = MachineInfo("machineId", "platform", "version", 4)
+          meta = emptyMap()
+          linkId = "link-id"
+        }
+      runPanacheRepository.persist(buildRunEntity(id = dummyRunId)).awaitSuspending()
+
+      // When
+      val result = runPanacheRepository.delete(dummyRun)
+
+      // Then
+      expect(result).toEqual(true)
+      expect(runPanacheRepository.count().awaitSuspending()).toEqual(0L)
+    }
+
+  fun buildRunEntity(
+    id: ObjectId? = null,
+    endTime: LocalDateTime = LocalDateTime.now(),
+  ): RunEntity =
     RunEntity(
-      id = null,
+      id = id,
       workspaceId = ObjectId(),
       command = "test command",
-      status = "test status",
+      status = "SUCCESS",
       startTime = LocalDateTime.now(),
       endTime = endTime,
       branch = "test branch",
@@ -84,52 +214,7 @@ class RunPanacheRepositoryTest {
           platformName = "test platform name",
         ),
       linkId = "test link id",
-      projectGraph =
-        RunEntity.ProjectGraph(
-          nodes =
-            mapOf(
-              "node1" to
-                RunEntity.ProjectGraph.Project(
-                  type = "test type",
-                  name = "test name",
-                  data =
-                    RunEntity.ProjectGraph.Project.ProjectConfiguration(
-                      root = "root",
-                      sourceRoot = "source root",
-                      targets = mapOf("target" to "{target}"),
-                      metadata =
-                        RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata(
-                          description = "description",
-                          technologies = listOf("technologies"),
-                          targetGroups = mapOf("target" to listOf("group")),
-                        ),
-                    ),
-                ),
-              "node2" to
-                RunEntity.ProjectGraph.Project(
-                  type = "test type",
-                  name = "test name",
-                  data =
-                    RunEntity.ProjectGraph.Project.ProjectConfiguration(
-                      root = "root",
-                      sourceRoot = null,
-                      metadata = null,
-                      targets = null,
-                    ),
-                ),
-            ),
-          dependencies =
-            mapOf(
-              "dependency" to
-                listOf(
-                  RunEntity.ProjectGraph.Dependency(
-                    source = "test source",
-                    target = "test target",
-                    type = "test type",
-                  ),
-                ),
-            ),
-        ),
+      projectGraph = null,
       hashedContributors = listOf("test hashed contributors"),
       sha = "test sha",
     )

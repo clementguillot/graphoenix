@@ -9,7 +9,7 @@
       "options": {
         "task": "build"
       },
-      "outputs": ["{projectRoot}/build/classes", "{projectRoot}/build/libs"]
+      "outputs": ["{projectRoot}/build/libs"]
     },
     "lint": {
       "executor": "@jnxplus/nx-gradle:run-task",
@@ -28,7 +28,7 @@
       "options": {
         "task": "test"
       },
-      "outputs": ["{projectRoot}/build/jacoco-report"]
+      "outputs": ["{projectRoot}/build/reports/kover"]
     }
   },
   "tags": []

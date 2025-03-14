@@ -1,15 +1,15 @@
 package org.graphoenix.server.domain.run.gateway
 
 import kotlinx.coroutines.flow.Flow
-import org.graphoenix.server.domain.run.model.Run
-import org.graphoenix.server.domain.run.model.RunStatus
-import org.graphoenix.server.domain.run.usecase.EndRunRequest
-import org.graphoenix.server.domain.workspace.model.WorkspaceId
+import org.graphoenix.server.domain.run.command.CreateRunCommand
+import org.graphoenix.server.domain.run.entity.Run
+import org.graphoenix.server.domain.run.valueobject.RunStatus
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import java.time.LocalDateTime
 
 interface RunRepository {
   suspend fun create(
-    run: EndRunRequest.Run,
+    run: CreateRunCommand,
     status: RunStatus,
     workspaceId: WorkspaceId,
   ): Run

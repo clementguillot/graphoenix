@@ -2,11 +2,11 @@ package org.graphoenix.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.restassured.RestAssured
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import org.graphoenix.server.presentation.dto.CreateOrgAndWorkspaceDto
-import org.graphoenix.server.presentation.dto.InitWorkspaceDto
+import org.graphoenix.server.presentation.http.controller.dto.CreateOrgAndWorkspaceDto
+import org.graphoenix.server.presentation.http.controller.dto.InitWorkspaceDto
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
@@ -29,11 +29,10 @@ fun prepareWorkspaceAndAccessToken(): String {
 
 suspend fun serializeAndCompress(
   dto: Any,
-  dispatcher: CoroutineDispatcher,
   objectMapper: ObjectMapper,
 ): ByteArray =
   coroutineScope {
-    withContext(dispatcher) {
+    withContext(Dispatchers.IO) {
       val json = objectMapper.writeValueAsString(dto)
       val outputStream = ByteArrayOutputStream()
       GZIPOutputStream(outputStream).bufferedWriter().use { it.write(json) }

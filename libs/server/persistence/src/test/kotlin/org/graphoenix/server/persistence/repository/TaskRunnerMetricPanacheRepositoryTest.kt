@@ -5,35 +5,56 @@ import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import jakarta.inject.Inject
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.bson.types.ObjectId
-import org.graphoenix.server.persistence.entity.TaskRunnerMetricEntity
+import org.graphoenix.server.domain.metric.command.CreateMetricCommand
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 @QuarkusTest
 class TaskRunnerMetricPanacheRepositoryTest {
   @Inject
   lateinit var taskRunnerMetricPanacheRepository: TaskRunnerMetricPanacheRepository
 
+  @BeforeEach
+  fun setUp() {
+    runBlocking {
+      taskRunnerMetricPanacheRepository.deleteAll().awaitSuspending()
+    }
+  }
+
   @Test
-  fun `should persist new entity`() =
+  fun `should create new task runner metrics in the DB`() =
     runTest {
-      val taskRunnerMetricEntity =
-        TaskRunnerMetricEntity(
-          id = null,
-          workspaceId = ObjectId(),
-          recordingDate = LocalDateTime.now(),
-          durationMs = 300,
-          success = true,
-          statusCode = 200,
-          entryType = "storeFile",
-          payloadSize = 42L,
+      // Given
+      val dummyWorkspaceId = WorkspaceId(ObjectId().toString())
+      val dummyMetrics =
+        listOf(
+          CreateMetricCommand(
+            workspaceId = dummyWorkspaceId,
+            entryType = "createRunGroup",
+            success = true,
+            statusCode = 200,
+            durationMs = 20,
+            payloadSize = null,
+          ),
+          CreateMetricCommand(
+            workspaceId = dummyWorkspaceId,
+            entryType = "completeRunGroup",
+            success = true,
+            statusCode = 200,
+            durationMs = 20,
+            payloadSize = null,
+          ),
         )
-      taskRunnerMetricPanacheRepository.persist(taskRunnerMetricEntity).awaitSuspending()
 
-      val count = taskRunnerMetricPanacheRepository.count().awaitSuspending()
+      // When
+      val result = taskRunnerMetricPanacheRepository.save(dummyMetrics)
 
-      expect(count).toEqual(1)
+      // Then
+      expect(result.size).toEqual(dummyMetrics.size)
+      expect(taskRunnerMetricPanacheRepository.count().awaitSuspending()).toEqual(2L)
     }
 }

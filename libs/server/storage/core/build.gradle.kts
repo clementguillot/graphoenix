@@ -4,6 +4,7 @@ plugins {
   kotlin("jvm")
   kotlin("plugin.allopen")
   id("io.quarkus")
+  id("org.jetbrains.kotlinx.kover")
   id("com.diffplug.spotless")
 }
 
@@ -25,12 +26,13 @@ dependencies {
   implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
   implementation("io.quarkus:quarkus-kotlin")
 
+  implementation(project(":libs:server:domain"))
+
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("ch.tutteli.atrium:atrium-fluent:$atriumVersion")
   testImplementation("io.mockk:mockk:$mockkVersion")
   testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:$quarkusMockkVersion")
   testImplementation("io.quarkus:quarkus-junit5")
-  testImplementation("io.quarkus:quarkus-jacoco")
 }
 
 group = "org.graphoenix.server.storage"
@@ -47,6 +49,7 @@ tasks.withType<Jar> {
 
 tasks.withType<Test> {
   systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+  finalizedBy("koverXmlReport")
 }
 
 allOpen {

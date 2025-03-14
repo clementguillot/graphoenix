@@ -13,7 +13,7 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandlers
 
 class GcsEmulatorResource : QuarkusTestResourceLifecycleManager {
-  lateinit var container: GenericContainer<*>
+  private lateinit var container: GenericContainer<*>
 
   override fun start(): Map<String, String> {
     container =
