@@ -26,4 +26,4 @@ runs:
     - run: pnpm install --frozen-lockfile
       shell: bash
 
-    - uses: nrwl/nx-set-shas@be2a36618456ad6f3abf921eb24900817da1af6b # v4.1.1
+    - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # v4.3.0
