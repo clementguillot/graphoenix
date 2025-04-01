@@ -1,11 +1,10 @@
 package org.graphoenix.server.domain.workspace.gateway
 
-import io.smallrye.mutiny.Uni
-import org.graphoenix.server.domain.workspace.model.AccessToken
-import org.graphoenix.server.domain.workspace.model.WorkspaceId
+import org.graphoenix.server.domain.workspace.entity.AccessToken
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 
 interface AccessTokenRepository {
-  fun createDefaultAccessToken(workspaceId: WorkspaceId): Uni<AccessToken>
+  suspend fun createDefaultAccessToken(workspaceId: WorkspaceId): AccessToken
 
   suspend fun findByEncodedValue(encodedValue: String): AccessToken?
 }

@@ -4,6 +4,7 @@ plugins {
   kotlin("jvm")
   kotlin("plugin.allopen")
   id("io.quarkus")
+  id("org.jetbrains.kotlinx.kover")
   id("com.diffplug.spotless")
 }
 
@@ -27,6 +28,10 @@ dependencies {
   implementation(kotlin("stdlib-jdk8"))
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j")
+  implementation("io.vertx:vertx-lang-kotlin-coroutines")
+
   implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
   implementation("io.quarkus:quarkus-arc")
   implementation("io.quarkus:quarkus-config-yaml")
@@ -41,7 +46,6 @@ dependencies {
   implementation("com.github.ajalt.clikt:clikt:$cliktVersion")
 
   implementation(project(":libs:server:domain"))
-  implementation(project(":libs:server:gateway"))
   implementation(project(":libs:server:persistence"))
   implementation(project(":libs:server:storage:azure"))
   implementation(project(":libs:server:storage:core"))
@@ -54,7 +58,6 @@ dependencies {
   testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:$quarkusMockkVersion")
   testImplementation("io.quarkus:quarkus-junit5")
   testImplementation("io.quarkus:quarkus-junit5-internal")
-  testImplementation("io.quarkus:quarkus-jacoco")
   testImplementation("io.quarkus:quarkus-test-hibernate-reactive-panache")
   testImplementation("io.rest-assured:rest-assured")
 }
@@ -69,6 +72,11 @@ java {
 
 tasks.withType<Test> {
   systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+  finalizedBy("koverXmlReport")
+}
+
+tasks.compileKotlin {
+  dependsOn("compileQuarkusGeneratedSourcesJava")
 }
 
 allOpen {
@@ -83,6 +91,14 @@ kotlin {
     freeCompilerArgs.add("-Xjsr305=strict")
     jvmTarget = JvmTarget.fromTarget(javaVersion)
     javaParameters = true
+  }
+}
+
+kover {
+  currentProject {
+    instrumentation {
+      disabledForTestTasks.add("testNative")
+    }
   }
 }
 

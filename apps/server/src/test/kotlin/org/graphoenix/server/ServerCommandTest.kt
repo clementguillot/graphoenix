@@ -5,7 +5,7 @@ import ch.tutteli.atrium.api.verbs.expect
 import com.github.ajalt.clikt.testing.test
 import io.mockk.*
 import io.quarkus.runtime.Quarkus
-import org.graphoenix.server.presentation.command.CleanupCommand
+import org.graphoenix.server.presentation.cli.CleanupCommand
 import org.junit.jupiter.api.Test
 
 class ServerCommandTest {

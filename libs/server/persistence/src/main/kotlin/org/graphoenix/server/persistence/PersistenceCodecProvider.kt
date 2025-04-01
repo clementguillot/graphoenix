@@ -1,9 +1,9 @@
 package org.graphoenix.server.persistence
 
-import ProjectCodec
 import org.bson.codecs.Codec
 import org.bson.codecs.configuration.CodecProvider
 import org.bson.codecs.configuration.CodecRegistry
+import org.graphoenix.server.persistence.codec.ProjectCodec
 import org.graphoenix.server.persistence.codec.ProjectConfigurationCodec
 import org.graphoenix.server.persistence.codec.ProjectGraphCodec
 import org.graphoenix.server.persistence.codec.ProjectMetadataCodec

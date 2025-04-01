@@ -5,6 +5,7 @@ plugins {
   kotlin("plugin.allopen")
   kotlin("plugin.noarg")
   id("io.quarkus")
+  id("org.jetbrains.kotlinx.kover")
   id("com.diffplug.spotless")
 }
 
@@ -23,20 +24,23 @@ val mockkVersion: String by project
 val quarkusMockkVersion: String by project
 
 dependencies {
+  implementation(kotlin("stdlib-jdk8"))
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
   implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
   implementation("io.quarkus:quarkus-arc")
   implementation("io.quarkus:quarkus-kotlin")
   implementation("io.quarkus:quarkus-liquibase-mongodb")
   implementation("io.quarkus:quarkus-mongodb-panache-kotlin")
 
+  implementation(project(":libs:server:domain"))
+
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("ch.tutteli.atrium:atrium-fluent:$atriumVersion")
   testImplementation("io.mockk:mockk:$mockkVersion")
   testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:$quarkusMockkVersion")
   testImplementation("io.quarkus:quarkus-junit5")
-  testImplementation("io.quarkus:quarkus-jacoco")
   testImplementation("io.quarkus:quarkus-test-hibernate-reactive-panache")
-  testImplementation("io.quarkus:quarkus-jacoco")
 }
 
 group = "org.graphoenix.server"
@@ -53,6 +57,7 @@ tasks.withType<Jar> {
 
 tasks.withType<Test> {
   systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+  finalizedBy("koverXmlReport")
 }
 
 allOpen {

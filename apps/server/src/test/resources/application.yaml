@@ -1,7 +1,7 @@
 quarkus:
   mongodb:
     devservices:
-      image-name: mongo:8.0.3
+      image-name: mongo:8.0.6
 
 graphoenix-server:
   configuration:

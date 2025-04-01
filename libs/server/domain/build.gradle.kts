@@ -2,10 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   kotlin("jvm")
-  kotlin("plugin.allopen")
   id("io.quarkus")
+  id("org.jetbrains.kotlinx.kover")
   id("com.diffplug.spotless")
-  id("jacoco")
 }
 
 repositories {
@@ -19,21 +18,13 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 val ktlintVersion: String by project
 val atriumVersion: String by project
-val mockkVersion: String by project
-val quarkusMockkVersion: String by project
 
 dependencies {
   implementation(enforcedPlatform("$quarkusPlatformGroupId:$quarkusPlatformArtifactId:$quarkusPlatformVersion"))
   implementation("io.quarkus:quarkus-kotlin")
-  implementation("io.quarkus:quarkus-mongodb-panache-kotlin")
 
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("ch.tutteli.atrium:atrium-fluent:$atriumVersion")
-  testImplementation("io.mockk:mockk:$mockkVersion")
-  testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:$quarkusMockkVersion")
   testImplementation("io.quarkus:quarkus-junit5")
-  testImplementation("io.quarkus:quarkus-jacoco")
-  testImplementation("io.quarkus:quarkus-test-hibernate-reactive-panache")
 }
 
 group = "org.graphoenix.server"
@@ -50,25 +41,7 @@ tasks.withType<Jar> {
 
 tasks.withType<Test> {
   systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
-  finalizedBy(tasks.jacocoTestReport)
-
-  configure<JacocoTaskExtension> {
-    excludeClassLoaders = listOf("*QuarkusClassLoader")
-    destinationFile =
-      layout.buildDirectory
-        .file("jacoco-quarkus.exec")
-        .get()
-        .asFile
-  }
-
-  tasks.jacocoTestReport {
-    enabled = false
-  }
-}
-
-allOpen {
-  annotation("jakarta.enterprise.context.ApplicationScoped")
-  annotation("io.quarkus.test.junit.QuarkusTest")
+  finalizedBy("koverXmlReport")
 }
 
 kotlin {

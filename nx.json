@@ -22,6 +22,5 @@
     "sharedGlobals": []
   },
   "plugins": ["@jnxplus/nx-gradle"],
-  "nxCloudUrl": "https://nx-cloud-ce.clementguillot.me",
-  "useLegacyCache": true
+  "nxCloudUrl": "https://nx-cloud-ce.clementguillot.me"
 }

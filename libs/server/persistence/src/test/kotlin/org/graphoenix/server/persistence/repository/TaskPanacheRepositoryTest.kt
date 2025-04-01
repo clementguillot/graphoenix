@@ -1,16 +1,17 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.toContainExactly
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
-import io.smallrye.mutiny.coroutines.asFlow
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.bson.types.ObjectId
+import org.graphoenix.server.domain.run.command.CreateTaskCommand
+import org.graphoenix.server.domain.run.valueobject.*
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.graphoenix.server.persistence.entity.TaskEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,41 +30,100 @@ class TaskPanacheRepositoryTest {
   }
 
   @Test
-  fun `should persist new entity`() =
+  fun `should create new tasks in the DB`() =
     runTest {
-      val taskEntity = buildTaskEntity()
-      taskPanacheRepository.persist(taskEntity).awaitSuspending()
+      // Given
+      val tasks =
+        listOf(
+          CreateTaskCommand(
+            taskId = "task1",
+            hash = Hash("hash1"),
+            projectName = "project1",
+            target = "target1",
+            startTime = LocalDateTime.now(),
+            endTime = LocalDateTime.now(),
+            cacheStatus = CacheStatus.CACHE_MISS,
+            status = 0,
+            uploadedToStorage = true,
+            terminalOutputUploadedToFileStorage = true,
+            isCacheable = true,
+            parallelism = true,
+            params = "params1",
+            terminalOutput = "output1",
+            hashDetails =
+              HashDetails(
+                nodes = mapOf("apps/server:ProjectConfiguration" to "dummy"),
+                runtime = emptyMap(),
+                implicitDeps = emptyMap(),
+              ),
+            artifactId = ArtifactId("artifact1"),
+            meta = null,
+          ),
+          CreateTaskCommand(
+            taskId = "task2",
+            hash = Hash("hash2"),
+            projectName = "project2",
+            target = "target2",
+            startTime = LocalDateTime.now(),
+            endTime = LocalDateTime.now(),
+            cacheStatus = CacheStatus.LOCAL_CACHE_HIT,
+            status = 1,
+            uploadedToStorage = true,
+            terminalOutputUploadedToFileStorage = true,
+            isCacheable = true,
+            parallelism = true,
+            params = "params2",
+            terminalOutput = "output2",
+            hashDetails =
+              HashDetails(
+                nodes = mapOf("apps/server:ProjectConfiguration" to "dummy"),
+                runtime = emptyMap(),
+                implicitDeps = emptyMap(),
+              ),
+            artifactId = null,
+            meta = null,
+          ),
+        )
+      val runId = RunId(ObjectId().toString())
+      val workspaceId = WorkspaceId(ObjectId().toString())
 
-      val count = taskPanacheRepository.count().awaitSuspending()
+      // When
+      val result = taskPanacheRepository.create(tasks, runId, workspaceId)
 
-      expect(count).toEqual(1)
+      // Then
+      expect(result.size).toEqual(tasks.size)
+      expect(taskPanacheRepository.count().awaitSuspending()).toEqual(2L)
     }
 
   @Test
-  fun `should find entities by their 'runId'`() =
+  fun `should find tasks by their run ID`() =
     runTest {
-      val runId = ObjectId()
-      taskPanacheRepository.persist(listOf(buildTaskEntity(runId), buildTaskEntity(runId), buildTaskEntity())).awaitSuspending()
+      // Given
+      val dummyRunId = ObjectId()
+      val dummyTaskEntities = listOf(buildTaskEntity(dummyRunId))
+      taskPanacheRepository.persist(dummyTaskEntities).awaitSuspending()
 
-      val result = taskPanacheRepository.findAllByRunId(runId).asFlow().toList()
-      val totalCount = taskPanacheRepository.count().awaitSuspending()
+      // When
+      val result = taskPanacheRepository.findAllByRunId(RunId(dummyRunId.toString())).toList()
 
-      expect(totalCount).toEqual(3)
-      expect(result.size).toEqual(2)
-      expect(result.map { it.runId }.distinct()).toContainExactly(runId)
+      // Then
+      expect(result.size).toEqual(1)
+      expect(result.toList()[0].taskId.value).toEqual(dummyTaskEntities[0].taskId)
     }
 
   @Test
-  fun `should delete entities by their 'runId'`() =
+  fun `should delete tasks by their run ID`() =
     runTest {
-      val runId = ObjectId()
-      taskPanacheRepository.persist(listOf(buildTaskEntity(runId), buildTaskEntity(runId), buildTaskEntity())).awaitSuspending()
+      // Given
+      val dummyRunId = ObjectId()
+      val dummyTaskEntities = listOf(buildTaskEntity(dummyRunId))
+      taskPanacheRepository.persist(dummyTaskEntities).awaitSuspending()
 
-      val result = taskPanacheRepository.deleteAllByRunId(runId).awaitSuspending()
-      val totalCount = taskPanacheRepository.count().awaitSuspending()
+      // When
+      val result = taskPanacheRepository.deleteAllByRunId(RunId(dummyRunId.toString()))
 
-      expect(totalCount).toEqual(1)
-      expect(result).toEqual(2)
+      // Then
+      expect(result).toEqual(1)
     }
 
   private fun buildTaskEntity(runId: ObjectId = ObjectId()): TaskEntity =

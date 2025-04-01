@@ -1,9 +1,9 @@
 package org.graphoenix.server.domain.run.gateway
 
-import org.graphoenix.server.domain.run.model.Artifact
-import org.graphoenix.server.domain.run.model.ArtifactId
-import org.graphoenix.server.domain.run.model.Hash
-import org.graphoenix.server.domain.workspace.model.WorkspaceId
+import org.graphoenix.server.domain.run.entity.Artifact
+import org.graphoenix.server.domain.run.valueobject.ArtifactId
+import org.graphoenix.server.domain.run.valueobject.Hash
+import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 
 interface ArtifactRepository {
   suspend fun findByHash(
