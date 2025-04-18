@@ -4,21 +4,31 @@ import ch.tutteli.atrium.api.fluent.en_GB.its
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.mockk.coEvery
-import io.mockk.mockk
-import io.quarkus.test.junit.QuarkusTest
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.workspace.entity.*
 import org.graphoenix.server.domain.workspace.gateway.*
 import org.graphoenix.server.domain.workspace.valueobject.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
 
-@QuarkusTest
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class CreateOrgAndWorkspaceTest {
-  private val mockWorkspaceRepository = mockk<WorkspaceRepository>()
-  private val mockOrganizationRepository = mockk<OrganizationRepository>()
-  private val mockAccessTokenRepository = mockk<AccessTokenRepository>()
-  private val createOrgAndWorkspace = CreateOrgAndWorkspace(mockWorkspaceRepository, mockOrganizationRepository, mockAccessTokenRepository)
+  @MockK
+  private lateinit var mockWorkspaceRepository: WorkspaceRepository
+
+  @MockK
+  private lateinit var mockOrganizationRepository: OrganizationRepository
+
+  @MockK
+  private lateinit var mockAccessTokenRepository: AccessTokenRepository
+
+  @InjectMockKs
+  private lateinit var createOrgAndWorkspace: CreateOrgAndWorkspace
 
   @Test
   fun `should create org with same name as workspace, workspace and default access token`() =

@@ -5,40 +5,38 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
-import io.smallrye.mutiny.coroutines.awaitSuspending
-import jakarta.inject.Inject
 import kotlinx.coroutines.test.runTest
+import org.graphoenix.server.*
 import org.graphoenix.server.domain.run.valueobject.HashDetails
 import org.graphoenix.server.domain.run.valueobject.MachineInfo
-import org.graphoenix.server.persistence.entity.ArtifactEntity
-import org.graphoenix.server.persistence.repository.*
-import org.graphoenix.server.prepareWorkspaceAndAccessToken
 import org.graphoenix.server.presentation.http.controller.dto.RunDto
-import org.graphoenix.server.serializeAndCompress
 import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.util.*
 
 @QuarkusTest
 class RunControllerTest {
-  @Inject
-  lateinit var accessTokenPanacheRepository: AccessTokenPanacheRepository
-
-  @Inject
-  lateinit var workspacePanacheRepository: WorkspacePanacheRepository
-
-  @Inject
-  lateinit var artifactPanacheRepository: ArtifactPanacheRepository
-
   private val objectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+
+  private lateinit var token: String
+  private lateinit var workspaceId: String
+
+  @BeforeEach
+  fun setUp() {
+    token = prepareWorkspaceAndAccessToken("RunControllerTest")
+    workspaceId = getWorkspaceId("RunControllerTest")
+  }
 
   @Test
   fun `should start a new run and return a list of URLs to access cached artifact`() =
     runTest {
-      val token = prepareWorkspaceAndAccessToken()
-      prepareExistingArtifact(token)
+      // Given
+      prepareExistingArtifact()
 
+      // When
       given()
         .header("authorization", token)
         .header("Content-Type", "application/json")
@@ -49,7 +47,7 @@ class RunControllerTest {
             ciExecutionId = null,
             ciExecutionEnv = null,
             distributedExecutionId = null,
-            hashes = listOf("new-hash", "existing-hash"),
+            hashes = listOf("hash-new", "hash-existing"),
             machineInfo =
               MachineInfo(
                 machineId = "junit",
@@ -71,13 +69,13 @@ class RunControllerTest {
         .body(
           "artifacts.size()",
           `is`(2),
-          "artifacts.existing-hash.artifactUrls.get",
+          "artifacts.hash-existing.artifactUrls.get",
           `is`(notNullValue()),
-          "artifacts.existing-hash.artifactUrls.put",
+          "artifacts.hash-existing.artifactUrls.put",
           `is`(notNullValue()),
-          "artifacts.new-hash.artifactUrls.get",
+          "artifacts.hash-new.artifactUrls.get",
           `is`(nullValue()),
-          "artifacts.new-hash.artifactUrls.put",
+          "artifacts.hash-new.artifactUrls.put",
           `is`(notNullValue()),
         )
     }
@@ -85,8 +83,7 @@ class RunControllerTest {
   @Test
   fun `should end a successful run`() =
     runTest {
-      val token = prepareWorkspaceAndAccessToken()
-
+      // When
       given()
         .header("authorization", token)
         .header("Content-Type", "application/octet-stream")
@@ -116,8 +113,7 @@ class RunControllerTest {
   @Test
   fun `should end a failure run`() =
     runTest {
-      val token = prepareWorkspaceAndAccessToken()
-
+      // When
       given()
         .header("authorization", token)
         .header("Content-Type", "application/octet-stream")
@@ -147,8 +143,7 @@ class RunControllerTest {
   @Test
   fun `should end run and generate its link ID`() =
     runTest {
-      val token = prepareWorkspaceAndAccessToken()
-
+      // When
       given()
         .header("authorization", token)
         .header("Content-Type", "application/octet-stream")
@@ -176,8 +171,10 @@ class RunControllerTest {
   @Test
   fun `should return a healthy response when workspace is authenticated`() =
     runTest {
+      // Given
       val token = prepareWorkspaceAndAccessToken()
 
+      // When
       given()
         .header("authorization", token)
         .`when`()
@@ -186,18 +183,41 @@ class RunControllerTest {
         .statusCode(200)
     }
 
-  private suspend fun prepareExistingArtifact(token: String) {
-    val accessToken = accessTokenPanacheRepository.find("encodedValue", token).firstResult().awaitSuspending()
-    val workspace = workspacePanacheRepository.findById(accessToken?.workspaceId!!).awaitSuspending()
-    val existingArtifact =
-      ArtifactEntity(
-        id = null,
-        artifactId = UUID.randomUUID().toString(),
-        hash = "existing-hash",
-        workspaceId = workspace?.id!!,
-      )
-    artifactPanacheRepository.persist(existingArtifact).awaitSuspending()
-  }
+  @Test
+  fun `should get a page of runs by workspace ID`() =
+    runTest {
+      // Given
+      val dummyRun = prepareExistingArtifact()
+
+      // When
+      given()
+        .header("authorization", token)
+        .`when`()
+        .get("/private/workspaces/$workspaceId/runs?pageIndex=0&pageSize=100")
+        .then()
+        .statusCode(200)
+        .body("totalCount", greaterThanOrEqualTo(1))
+        .body("items.findAll { it.command == '%s' }.status".format(dummyRun.run.command), hasItem("SUCCESS"))
+    }
+
+  private suspend fun prepareExistingArtifact(): RunDto.End =
+    buildEndRunDto(
+      listOf(buildTaskDto("existing")),
+    ).let { dto ->
+      given()
+        .header("authorization", token)
+        .header("Content-Type", "application/octet-stream")
+        .body(
+          serializeAndCompress(
+            dto,
+            objectMapper,
+          ),
+        ).`when`()
+        .post("/runs/end")
+        .then()
+        .statusCode(200)
+      dto
+    }
 
   private fun buildEndRunDto(
     tasks: Collection<RunDto.End.Task>,

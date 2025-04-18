@@ -2,16 +2,26 @@ package org.graphoenix.server.application.workspace.usecase
 
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.workspace.entity.Organization
 import org.graphoenix.server.domain.workspace.gateway.OrganizationRepository
 import org.graphoenix.server.domain.workspace.valueobject.OrganizationId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class CreateOrganizationTest {
-  private val mockOrgRepository = mockk<OrganizationRepository>()
-  private val createOrganization = CreateOrganization(mockOrgRepository)
+  @MockK
+  private lateinit var mockOrgRepository: OrganizationRepository
+
+  @InjectMockKs
+  private lateinit var createOrganization: CreateOrganization
 
   @Test
   fun `should return the newly created organization`() =

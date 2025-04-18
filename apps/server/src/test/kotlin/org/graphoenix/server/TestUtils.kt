@@ -1,29 +1,48 @@
 package org.graphoenix.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.restassured.RestAssured
+import io.restassured.RestAssured.given
 import kotlinx.coroutines.*
-import org.graphoenix.server.presentation.http.controller.dto.CreateOrgAndWorkspaceDto
-import org.graphoenix.server.presentation.http.controller.dto.InitWorkspaceDto
+import org.graphoenix.server.presentation.http.controller.dto.*
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
-fun prepareWorkspaceAndAccessToken(): String {
-  val response =
-    RestAssured
-      .given()
-      .header("Content-Type", "application/json")
-      .body(
-        CreateOrgAndWorkspaceDto(
-          workspaceName = "test-workspace",
-          installationSource = "junit",
-          nxInitDate = null,
-        ),
-      ).post("/create-org-and-workspace")
-      .`as`(InitWorkspaceDto::class.java)
+fun createOrg(name: String = "my new org"): IdDto =
+  given()
+    .header("Content-Type", "application/json")
+    .body(CreateOrganizationDto(name))
+    .`when`()
+    .post("/private/create-org")
+    .`as`(IdDto::class.java)
 
-  return response.token
-}
+fun prepareWorkspaceAndAccessToken(workspaceName: String = "test-workspace"): String =
+  given()
+    .header("Content-Type", "application/json")
+    .body(
+      CreateOrgAndWorkspaceDto(
+        workspaceName = workspaceName,
+        installationSource = "junit",
+        nxInitDate = null,
+      ),
+    ).post("/create-org-and-workspace")
+    .`as`(InitWorkspaceDto::class.java)
+    .token
+
+fun getWorkspaceId(workspaceName: String): String =
+  given()
+    .`when`()
+    .get("/private/organizations")
+    .`as`(Array<OrganizationDto>::class.java)
+    .let { orgs ->
+      orgs.find { it.name == workspaceName }.let { org ->
+        given()
+          .`when`()
+          .get("/private/organizations/${org?.id}/workspaces")
+          .`as`(Array<WorkspaceDto>::class.java)
+          .first()
+          .id
+      }
+    }
 
 suspend fun serializeAndCompress(
   dto: Any,

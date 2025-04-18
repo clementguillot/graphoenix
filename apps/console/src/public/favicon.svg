@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Graphoenix" data-name="Graphoenix Logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 431 431">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: oklch(0.707 0.165 254.624);
+      }
+    </style>
+  </defs>
+  <polygon class="cls-1" points="246.98 181.05 194.02 331.99 24.01 95 246.98 181.05"/>
+  <polygon class="cls-1" points="187.01 386 255.5 188.02 329.96 279.51 187.01 386"/>
+  <polygon class="cls-1" points="334 267 259.97 176.5 334 111 334 267 334 267"/>
+  <polygon class="cls-1" points="247 170.99 109.03 115.47 80 31.01 247 170.99 247 170.99"/>
+  <polygon class="cls-1" points="180.91 332.06 189.78 346.32 170.04 399.57 107 385.49 180.91 332.06"/>
+  <polygon class="cls-1" points="407 161 344 161 344 112 407 161"/>
+</svg>

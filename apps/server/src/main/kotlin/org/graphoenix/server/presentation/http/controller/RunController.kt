@@ -8,26 +8,29 @@ import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.graphoenix.server.application.run.usecase.*
 import org.graphoenix.server.configuration.ServerConfiguration
+import org.graphoenix.server.domain.common.pagination.PageCollection
 import org.graphoenix.server.domain.run.valueobject.Hash
 import org.graphoenix.server.domain.workspace.valueobject.AccessLevel
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.graphoenix.server.infrastructure.io.GzipJsonDecoder
 import org.graphoenix.server.presentation.http.controller.dto.*
 import org.graphoenix.server.presentation.http.getWorkspaceId
+import org.jboss.resteasy.reactive.RestQuery
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Authenticated
 class RunController(
   private val gzipJsonDecoder: GzipJsonDecoder,
   private val identity: CurrentIdentityAssociation,
   private val serverConfiguration: ServerConfiguration,
   private val startRun: StartRun,
   private val endRun: EndRun,
+  private val getRunPageByWorkspaceId: GetRunPageByWorkspaceId,
 ) {
   @Operation(
     summary = "Retrieves URLs for retrieving/storing cached artifacts",
   )
+  @Authenticated
   @POST
   @Path("/v2/runs/start")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -50,6 +53,7 @@ class RunController(
   @Operation(
     summary = "Stores information about a run",
   )
+  @Authenticated
   @POST
   @Path("/runs/end")
   @Consumes(MediaType.APPLICATION_OCTET_STREAM)
@@ -71,10 +75,34 @@ class RunController(
   @Operation(
     summary = "Indicates if the workspace for the authentication token is enabled",
   )
+  @Authenticated
   @GET
   @Path("/runs/workspace-status")
   @Produces(MediaType.TEXT_PLAIN)
   suspend fun workspaceStatus() = "" // hopefully, all authenticated workspaces are enabled :)
+
+  @Operation(
+    summary = "Gets a page of runs for a workspace",
+  )
+  @GET
+  @Path("/private/workspaces/{workspaceId}/runs")
+  suspend fun getRunPage(
+    workspaceId: String,
+    @RestQuery pageIndex: Int = 0,
+    @RestQuery pageSize: Int = 20,
+  ): PageCollection<RunSimpleDto> =
+    getRunPageByWorkspaceId(
+      GetRunPageByWorkspaceId.Request(
+        workspaceId = WorkspaceId(workspaceId),
+        pageIndex = pageIndex,
+        pageSize = pageSize,
+      ),
+    ) { response ->
+      PageCollection(
+        items = response.runs.items.map { RunSimpleDto.from(it) },
+        totalCount = response.runs.totalCount,
+      )
+    }
 
   private suspend fun isReadWriteContext(): Boolean = identity.deferredIdentity.awaitSuspending().hasRole(AccessLevel.READ_WRITE.value)
 }
