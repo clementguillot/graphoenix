@@ -2,10 +2,7 @@ package org.graphoenix.server.domain.run.command
 
 import ch.tutteli.atrium.api.fluent.en_GB.toBeAnInstanceOf
 import ch.tutteli.atrium.api.verbs.expect
-import org.graphoenix.server.domain.run.valueobject.ArtifactId
-import org.graphoenix.server.domain.run.valueobject.CacheStatus
-import org.graphoenix.server.domain.run.valueobject.Hash
-import org.graphoenix.server.domain.run.valueobject.HashDetails
+import org.graphoenix.server.domain.run.valueobject.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
@@ -35,7 +32,7 @@ class CreateTaskCommandTest {
             runtime = emptyMap(),
           ),
         artifactId = ArtifactId("artifactId"),
-        meta = emptyMap(),
+        meta = null,
       ),
     ).toBeAnInstanceOf<CreateTaskCommand>()
   }

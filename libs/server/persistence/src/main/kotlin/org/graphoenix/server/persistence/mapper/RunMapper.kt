@@ -5,8 +5,8 @@ import org.bson.types.ObjectId
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.entity.Run
 import org.graphoenix.server.domain.run.valueobject.*
-import org.graphoenix.server.domain.run.valueobject.RunId
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
+import org.graphoenix.server.persistence.entity.MetadataEntity
 import org.graphoenix.server.persistence.entity.RunEntity
 
 fun RunEntity.toDomain(objectMapper: ObjectMapper): Run =
@@ -71,7 +71,7 @@ fun RunEntity.toDomain(objectMapper: ObjectMapper): Run =
                       },
                     metadata =
                       node.data.metadata?.let { metadata ->
-                        ProjectGraph.Project.ProjectConfiguration.ProjectMetadata(
+                        Metadata(
                           description = metadata.description,
                           technologies = metadata.technologies,
                           targetGroups = metadata.targetGroups,
@@ -162,7 +162,7 @@ fun CreateRunCommand.toEntity(
                       },
                     metadata =
                       node.data.metadata?.let {
-                        RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata(
+                        MetadataEntity(
                           description = it.description,
                           technologies = it.technologies,
                           targetGroups = it.targetGroups,

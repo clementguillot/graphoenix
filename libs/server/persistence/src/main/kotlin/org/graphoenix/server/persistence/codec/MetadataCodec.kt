@@ -1,17 +1,13 @@
 package org.graphoenix.server.persistence.codec
 
-import org.bson.BsonReader
-import org.bson.BsonType
-import org.bson.BsonWriter
-import org.bson.codecs.Codec
-import org.bson.codecs.DecoderContext
-import org.bson.codecs.EncoderContext
-import org.graphoenix.server.persistence.entity.RunEntity
+import org.bson.*
+import org.bson.codecs.*
+import org.graphoenix.server.persistence.entity.MetadataEntity
 
-class ProjectMetadataCodec : Codec<RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata> {
+class MetadataCodec : Codec<MetadataEntity> {
   override fun encode(
     writer: BsonWriter,
-    value: RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata,
+    value: MetadataEntity,
     encoderContext: EncoderContext,
   ) = writer.run {
     writeStartDocument()
@@ -19,7 +15,7 @@ class ProjectMetadataCodec : Codec<RunEntity.ProjectGraph.Project.ProjectConfigu
     writeEndDocument()
   }
 
-  private fun BsonWriter.writeFields(value: RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata) {
+  private fun BsonWriter.writeFields(value: MetadataEntity) {
     writeNullableField("description", value.description) { writeString(it) }
     writeNullableField("technologies", value.technologies) { technologies ->
       writeArrayField { technologies.forEach { writeString(it) } }
@@ -37,7 +33,7 @@ class ProjectMetadataCodec : Codec<RunEntity.ProjectGraph.Project.ProjectConfigu
   override fun decode(
     reader: BsonReader,
     decoderContext: DecoderContext,
-  ): RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata =
+  ): MetadataEntity =
     reader.run {
       readStartDocument()
       val metadata = readMetadataFields()
@@ -45,11 +41,11 @@ class ProjectMetadataCodec : Codec<RunEntity.ProjectGraph.Project.ProjectConfigu
       metadata
     }
 
-  private fun BsonReader.readMetadataFields(): RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata {
+  private fun BsonReader.readMetadataFields(): MetadataEntity {
     val description = readNullableField("description") { readString() }
     val technologies = readNullableField("technologies") { readStringArray() }
     val targetGroups = readNullableField("targetGroups") { readTargetGroups() }
-    return RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata(
+    return MetadataEntity(
       description,
       technologies,
       targetGroups,
@@ -66,6 +62,5 @@ class ProjectMetadataCodec : Codec<RunEntity.ProjectGraph.Project.ProjectConfigu
       readEndDocument()
     }
 
-  override fun getEncoderClass(): Class<RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata> =
-    RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata::class.java
+  override fun getEncoderClass(): Class<MetadataEntity> = MetadataEntity::class.java
 }

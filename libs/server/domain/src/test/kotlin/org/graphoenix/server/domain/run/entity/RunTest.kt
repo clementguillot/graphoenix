@@ -87,7 +87,7 @@ class RunTest {
                   root = "root",
                   sourceRoot = "root",
                   metadata =
-                    ProjectGraph.Project.ProjectConfiguration.ProjectMetadata(
+                    Metadata(
                       description = null,
                       technologies = null,
                       targetGroups = null,

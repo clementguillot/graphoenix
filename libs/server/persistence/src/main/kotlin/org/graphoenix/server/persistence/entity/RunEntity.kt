@@ -65,16 +65,8 @@ data class RunEntity(
         var root: String,
         var sourceRoot: String?,
         var targets: Map<String, String>?,
-        var metadata: Metadata?,
-      ) {
-        @MongoEntity
-        data class Metadata(
-          var description: String?,
-          var technologies: Collection<String>?,
-          var targetGroups: Map<String, Collection<String>>?,
-          // missing `owners?`
-        )
-      }
+        var metadata: MetadataEntity?,
+      )
     }
 
     @MongoEntity

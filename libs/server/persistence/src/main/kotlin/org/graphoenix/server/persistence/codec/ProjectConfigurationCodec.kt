@@ -1,19 +1,16 @@
 package org.graphoenix.server.persistence.codec
 
-import org.bson.BsonReader
-import org.bson.BsonType
-import org.bson.BsonWriter
-import org.bson.codecs.Codec
-import org.bson.codecs.DecoderContext
-import org.bson.codecs.EncoderContext
+import org.bson.*
+import org.bson.codecs.*
 import org.bson.codecs.configuration.CodecRegistry
+import org.graphoenix.server.persistence.entity.MetadataEntity
 import org.graphoenix.server.persistence.entity.RunEntity
 
 class ProjectConfigurationCodec(
   private val registry: CodecRegistry,
 ) : Codec<RunEntity.ProjectGraph.Project.ProjectConfiguration> {
   private val metadataCodec by lazy {
-    registry[RunEntity.ProjectGraph.Project.ProjectConfiguration.Metadata::class.java]
+    registry[MetadataEntity::class.java]
   }
 
   override fun encode(

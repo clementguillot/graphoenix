@@ -81,7 +81,12 @@ class TaskPanacheRepositoryTest {
                 implicitDeps = emptyMap(),
               ),
             artifactId = null,
-            meta = null,
+            meta =
+              Metadata(
+                description = null,
+                technologies = null,
+                targetGroups = null,
+              ),
           ),
         )
       val runId = RunId(ObjectId().toString())
