@@ -14,3 +14,5 @@ trim_trailing_whitespace = false
 
 [*.{kt,kts}]
 ktlint_standard_no-wildcard-imports = disabled
+ij_kotlin_name_count_to_use_star_import = 3
+ij_kotlin_name_count_to_use_star_import_for_members = 3

@@ -1,8 +1,6 @@
 package org.graphoenix.server.domain.run.command
 
-import org.graphoenix.server.domain.run.valueobject.MachineInfo
-import org.graphoenix.server.domain.run.valueobject.ProjectGraph
-import org.graphoenix.server.domain.run.valueobject.VcsContext
+import org.graphoenix.server.domain.run.valueobject.*
 import java.time.LocalDateTime
 
 data class CreateRunCommand(

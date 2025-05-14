@@ -1,12 +1,8 @@
 package org.graphoenix.server.application.run.usecase
 
-import ch.tutteli.atrium.api.fluent.en_GB.its
-import ch.tutteli.atrium.api.fluent.en_GB.toBeAnInstanceOf
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.entity.Artifact
 import org.graphoenix.server.domain.run.gateway.ArtifactRepository

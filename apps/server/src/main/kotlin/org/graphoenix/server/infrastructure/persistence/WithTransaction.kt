@@ -6,9 +6,7 @@ import io.smallrye.mutiny.coroutines.uni
 import io.vertx.core.Vertx
 import io.vertx.core.impl.ContextInternal
 import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
 import org.jboss.logging.Logger
 

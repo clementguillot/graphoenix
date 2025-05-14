@@ -1,8 +1,6 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.its
-import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending

@@ -6,10 +6,7 @@ import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.entity.*
-import org.graphoenix.server.domain.run.gateway.ArtifactRepository
-import org.graphoenix.server.domain.run.gateway.RunRepository
-import org.graphoenix.server.domain.run.gateway.StorageService
-import org.graphoenix.server.domain.run.gateway.TaskRepository
+import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.*
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test

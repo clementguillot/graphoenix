@@ -4,9 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import org.graphoenix.server.application.UseCase
 import org.graphoenix.server.domain.workspace.entity.AccessToken
 import org.graphoenix.server.domain.workspace.entity.Workspace
-import org.graphoenix.server.domain.workspace.gateway.AccessTokenRepository
-import org.graphoenix.server.domain.workspace.gateway.OrganizationRepository
-import org.graphoenix.server.domain.workspace.gateway.WorkspaceRepository
+import org.graphoenix.server.domain.workspace.gateway.*
 import org.graphoenix.server.infrastructure.persistence.withTransaction
 import java.time.LocalDateTime
 

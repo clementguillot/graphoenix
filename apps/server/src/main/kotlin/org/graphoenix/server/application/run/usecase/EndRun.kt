@@ -4,12 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped
 import org.graphoenix.server.application.UseCase
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
-import org.graphoenix.server.domain.run.entity.Artifact
-import org.graphoenix.server.domain.run.entity.Run
-import org.graphoenix.server.domain.run.entity.Task
-import org.graphoenix.server.domain.run.gateway.ArtifactRepository
-import org.graphoenix.server.domain.run.gateway.RunRepository
-import org.graphoenix.server.domain.run.gateway.TaskRepository
+import org.graphoenix.server.domain.run.entity.*
+import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.RunStatus
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 

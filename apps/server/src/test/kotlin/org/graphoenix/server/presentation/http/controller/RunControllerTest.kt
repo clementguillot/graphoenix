@@ -11,9 +11,7 @@ import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.valueobject.HashDetails
 import org.graphoenix.server.domain.run.valueobject.MachineInfo
 import org.graphoenix.server.persistence.entity.ArtifactEntity
-import org.graphoenix.server.persistence.repository.AccessTokenPanacheRepository
-import org.graphoenix.server.persistence.repository.ArtifactPanacheRepository
-import org.graphoenix.server.persistence.repository.WorkspacePanacheRepository
+import org.graphoenix.server.persistence.repository.*
 import org.graphoenix.server.prepareWorkspaceAndAccessToken
 import org.graphoenix.server.presentation.http.controller.dto.RunDto
 import org.graphoenix.server.serializeAndCompress

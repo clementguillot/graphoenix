@@ -9,9 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
 import org.graphoenix.server.domain.run.entity.*
-import org.graphoenix.server.domain.run.gateway.ArtifactRepository
-import org.graphoenix.server.domain.run.gateway.RunRepository
-import org.graphoenix.server.domain.run.gateway.TaskRepository
+import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.*
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test

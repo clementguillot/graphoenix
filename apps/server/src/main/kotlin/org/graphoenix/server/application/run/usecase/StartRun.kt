@@ -1,9 +1,7 @@
 package org.graphoenix.server.application.run.usecase
 
 import jakarta.enterprise.context.ApplicationScoped
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import org.graphoenix.server.application.UseCase
 import org.graphoenix.server.domain.run.entity.Artifact
 import org.graphoenix.server.domain.run.gateway.ArtifactRepository

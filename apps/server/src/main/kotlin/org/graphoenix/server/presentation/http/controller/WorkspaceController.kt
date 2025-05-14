@@ -1,18 +1,12 @@
 package org.graphoenix.server.presentation.http.controller
 
-import jakarta.ws.rs.Consumes
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.Produces
+import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.graphoenix.server.application.workspace.usecase.CreateOrgAndWorkspace
 import org.graphoenix.server.application.workspace.usecase.CreateWorkspace
 import org.graphoenix.server.configuration.ServerConfiguration
-import org.graphoenix.server.presentation.http.controller.dto.CreateOrgAndWorkspaceDto
-import org.graphoenix.server.presentation.http.controller.dto.CreateWorkspaceDto
-import org.graphoenix.server.presentation.http.controller.dto.IdDto
-import org.graphoenix.server.presentation.http.controller.dto.InitWorkspaceDto
+import org.graphoenix.server.presentation.http.controller.dto.*
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)

@@ -3,10 +3,7 @@ package org.graphoenix.server.domain.workspace.entity
 import ch.tutteli.atrium.api.fluent.en_GB.its
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
-import org.graphoenix.server.domain.workspace.valueobject.AccessLevel
-import org.graphoenix.server.domain.workspace.valueobject.AccessTokenId
-import org.graphoenix.server.domain.workspace.valueobject.AccessTokenPublicId
-import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
+import org.graphoenix.server.domain.workspace.valueobject.*
 import org.junit.jupiter.api.Test
 
 class AccessTokenTest {

@@ -4,10 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.graphoenix.server.application.UseCase
-import org.graphoenix.server.domain.run.gateway.ArtifactRepository
-import org.graphoenix.server.domain.run.gateway.RunRepository
-import org.graphoenix.server.domain.run.gateway.StorageService
-import org.graphoenix.server.domain.run.gateway.TaskRepository
+import org.graphoenix.server.domain.run.gateway.*
 import org.jboss.logging.Logger
 import java.time.LocalDateTime
 

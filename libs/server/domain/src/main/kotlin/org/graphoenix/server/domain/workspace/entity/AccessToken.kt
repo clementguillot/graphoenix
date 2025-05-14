@@ -1,9 +1,6 @@
 package org.graphoenix.server.domain.workspace.entity
 
-import org.graphoenix.server.domain.workspace.valueobject.AccessLevel
-import org.graphoenix.server.domain.workspace.valueobject.AccessTokenId
-import org.graphoenix.server.domain.workspace.valueobject.AccessTokenPublicId
-import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
+import org.graphoenix.server.domain.workspace.valueobject.*
 
 class AccessToken private constructor(
   builder: Builder,

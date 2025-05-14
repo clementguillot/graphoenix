@@ -10,14 +10,9 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerResponseContext
 import org.graphoenix.server.infrastructure.http.filter.GlobalErrorFilter
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import java.net.URI
-import java.util.logging.Level
-import java.util.logging.LogManager
-import java.util.logging.LogRecord
-import java.util.logging.Logger
+import java.util.logging.*
 
 @QuarkusTest
 class GlobalErrorFilterTest {

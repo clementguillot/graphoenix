@@ -1,8 +1,6 @@
 package org.graphoenix.server.infrastructure.filter
 
-import ch.tutteli.atrium.api.fluent.en_GB.its
-import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.mockk.*
 import io.quarkiverse.test.junit.mockk.InjectMock
@@ -11,9 +9,7 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.core.SecurityContext
 import kotlinx.coroutines.test.runTest
-import org.graphoenix.server.application.workspace.usecase.GetWorkspaceAccessToken
-import org.graphoenix.server.application.workspace.usecase.GetWorkspaceAccessTokenRequest
-import org.graphoenix.server.application.workspace.usecase.GetWorkspaceAccessTokenResponse
+import org.graphoenix.server.application.workspace.usecase.*
 import org.graphoenix.server.domain.workspace.entity.AccessToken
 import org.graphoenix.server.domain.workspace.valueobject.AccessLevel
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId

@@ -2,14 +2,10 @@ package org.graphoenix.server.storage.s3
 
 import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
 import aws.sdk.kotlin.services.s3.S3Client
-import aws.sdk.kotlin.services.s3.model.GetObjectRequest
-import aws.sdk.kotlin.services.s3.model.NoSuchKey
-import aws.sdk.kotlin.services.s3.model.PutObjectRequest
+import aws.sdk.kotlin.services.s3.model.*
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.net.url.Url
-import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
-import ch.tutteli.atrium.api.fluent.en_GB.toStartWith
-import ch.tutteli.atrium.api.fluent.en_GB.toThrow
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import jakarta.inject.Inject
