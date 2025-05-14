@@ -3,7 +3,6 @@ package org.graphoenix.server.presentation.http.controller.dto
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
 import org.graphoenix.server.domain.run.valueobject.*
-import org.graphoenix.server.domain.run.valueobject.ArtifactId
 import java.time.LocalDateTime
 import java.util.*
 
@@ -85,7 +84,7 @@ sealed class RunDto {
           target = task.target,
           startTime = task.startTime,
           endTime = task.endTime,
-          cacheStatus = CacheStatus.from(task.cacheStatus),
+          cacheStatus = task.cacheStatus?.let { CacheStatus.from(it) },
           status = task.status,
           uploadedToStorage = task.uploadedToStorage,
           terminalOutputUploadedToFileStorage = task.terminalOutputUploadedToFileStorage,
@@ -105,18 +104,18 @@ sealed class RunDto {
       val projectName: String,
       val target: String,
       val startTime: LocalDateTime,
-      val endTime: LocalDateTime,
-      val cacheStatus: String,
-      val status: Int,
+      val endTime: LocalDateTime?,
+      val cacheStatus: String?,
+      val status: Int?,
       val uploadedToStorage: Boolean,
       val terminalOutputUploadedToFileStorage: Boolean,
       val isCacheable: Boolean,
       val parallelism: Boolean,
       val params: String,
-      val terminalOutput: String,
+      val terminalOutput: String?,
       val hashDetails: HashDetails,
       val artifactId: UUID?,
-      val meta: Map<String, String>?,
+      val meta: Metadata?,
     )
 
     data class RunData(

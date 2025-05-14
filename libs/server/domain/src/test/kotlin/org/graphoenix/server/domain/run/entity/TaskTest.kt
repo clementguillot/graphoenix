@@ -38,7 +38,12 @@ class TaskTest {
             implicitDeps = emptyMap(),
           )
         artifactId = ArtifactId("artifact-id")
-        meta = mapOf("nxCloudVersion" to "123")
+        meta =
+          Metadata(
+            description = "test",
+            technologies = null,
+            targetGroups = null,
+          )
       }
 
     expect(task) {
@@ -66,7 +71,13 @@ class TaskTest {
         ),
       )
       its { artifactId?.value }.toEqual("artifact-id")
-      its { meta }.toEqual(mapOf("nxCloudVersion" to "123"))
+      its { meta }.toEqual(
+        Metadata(
+          description = "test",
+          technologies = null,
+          targetGroups = null,
+        ),
+      )
     }
   }
 }

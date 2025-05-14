@@ -84,10 +84,10 @@ class RunPanacheRepositoryTest {
                           root = "root",
                           sourceRoot = "root",
                           metadata =
-                            ProjectGraph.Project.ProjectConfiguration.ProjectMetadata(
-                              description = null,
-                              technologies = null,
-                              targetGroups = null,
+                            Metadata(
+                              description = "description",
+                              technologies = listOf("vite"),
+                              targetGroups = mapOf("test" to listOf("test")),
                             ),
                           targets =
                             mapOf(
@@ -123,9 +123,10 @@ class RunPanacheRepositoryTest {
 
       // When
       val result = runPanacheRepository.create(runRequest, RunStatus.SUCCESS, workspaceId)
+      val decodedEntity = runPanacheRepository.findById(ObjectId(result.id.value)).awaitSuspending()
 
       // Then
-      expect(result) {
+      expect(decodedEntity!!) {
         its { linkId }.toEqual("test-link")
         its { command }.toEqual("nx test apps/server")
       }

@@ -18,7 +18,7 @@ data class ProjectGraph(
       val root: String,
       val sourceRoot: String?,
       val targets: Map<String, TargetConfiguration>?,
-      val metadata: ProjectMetadata?,
+      val metadata: Metadata?,
     ) {
       data class TargetConfiguration(
         val executor: String?,
@@ -33,13 +33,6 @@ data class ProjectGraph(
         val parallelism: Boolean?,
         val syncGenerators: Collection<String>?,
         // missing `metadata?`
-      )
-
-      data class ProjectMetadata(
-        val description: String?,
-        val technologies: Collection<String>?,
-        val targetGroups: Map<String, Collection<String>>?,
-        // missing `owners?`
       )
     }
   }

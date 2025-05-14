@@ -14,18 +14,18 @@ data class TaskEntity(
   var projectName: String,
   var target: String,
   var startTime: LocalDateTime,
-  var endTime: LocalDateTime,
-  var cacheStatus: String,
-  var status: Int,
+  var endTime: LocalDateTime?,
+  var cacheStatus: String?,
+  var status: Int?,
   var uploadedToStorage: Boolean,
   var terminalOutputUploadedToFileStorage: Boolean,
   var isCacheable: Boolean,
   var parallelism: Boolean,
   var params: String,
-  var terminalOutput: String,
+  var terminalOutput: String?,
   var hashDetails: HashDetails,
   var artifactId: String?,
-  var meta: Map<String, String>?,
+  var meta: MetadataEntity?,
 ) {
   @MongoEntity
   data class HashDetails(
