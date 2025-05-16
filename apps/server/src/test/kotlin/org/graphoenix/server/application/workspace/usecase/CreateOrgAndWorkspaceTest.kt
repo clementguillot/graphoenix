@@ -31,7 +31,9 @@ class CreateOrgAndWorkspaceTest {
         CreateOrgAndWorkspaceRequest(workspaceName = dummyWorkspaceName, installationSource = "junit", nxInitDate = LocalDateTime.now())
 
       coEvery { mockOrganizationRepository.create(dummyWorkspaceName) } returns Organization(dummyOrgId, dummyWorkspaceName)
-      coEvery { mockWorkspaceRepository.create(dummyRequest.workspaceName, dummyOrgId) } returns
+      coEvery {
+        mockWorkspaceRepository.create(dummyRequest.workspaceName, dummyRequest.installationSource, dummyRequest.nxInitDate, dummyOrgId)
+      } returns
         Workspace(dummyWorkspaceId, dummyOrgId, dummyWorkspaceName, "junit", null)
       coEvery { mockAccessTokenRepository.createDefaultAccessToken(dummyWorkspaceId) } returns
         AccessToken {

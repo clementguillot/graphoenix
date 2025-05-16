@@ -13,7 +13,7 @@ interface WorkspaceRepository {
   suspend fun create(
     name: String,
     installationSource: String,
-    nxInitDate: LocalDateTime,
+    nxInitDate: LocalDateTime?,
     orgId: OrganizationId,
   ): Workspace
 }

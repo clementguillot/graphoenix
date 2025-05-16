@@ -34,7 +34,7 @@ class WorkspacePanacheRepository :
   override suspend fun create(
     name: String,
     installationSource: String,
-    nxInitDate: LocalDateTime,
+    nxInitDate: LocalDateTime?,
     orgId: OrganizationId,
   ): Workspace {
     val entity = WorkspaceEntity(null, ObjectId(orgId.value), name, installationSource, nxInitDate)

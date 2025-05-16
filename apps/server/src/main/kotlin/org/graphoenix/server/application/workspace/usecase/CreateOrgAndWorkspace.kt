@@ -21,7 +21,13 @@ class CreateOrgAndWorkspace(
     presenter(
       withTransaction {
         val org = organizationRepository.create(request.workspaceName)
-        val workspace = workspaceRepository.create(request.workspaceName, org.id)
+        val workspace =
+          workspaceRepository.create(
+            request.workspaceName,
+            request.installationSource,
+            request.nxInitDate,
+            org.id,
+          )
         val accessToken = accessTokenRepository.createDefaultAccessToken(workspace.id)
         CreateOrgAndWorkspaceResponse(workspace, accessToken)
       },
