@@ -21,4 +21,12 @@ class OrganizationPanacheRepository :
   }
 
   override suspend fun isValidOrgId(id: OrganizationId): Boolean = findById(ObjectId(id.value)).awaitSuspending() !== null
+
+  override suspend fun findById(id: OrganizationId): Organization? = findById(ObjectId(id.value)).awaitSuspending()?.toDomain()
+
+  override suspend fun findAllOrgs(): Collection<Organization> =
+    findAll()
+      .list()
+      .awaitSuspending()
+      .map { it.toDomain() }
 }

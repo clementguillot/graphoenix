@@ -3,21 +3,33 @@ package org.graphoenix.server.application.workspace.usecase
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.fluent.en_GB.toThrow
 import ch.tutteli.atrium.api.verbs.expect
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.graphoenix.server.application.workspace.exception.OrganizationNotFoundException
+import org.graphoenix.server.application.workspace.exception.WorkspaceException
 import org.graphoenix.server.domain.workspace.entity.Workspace
 import org.graphoenix.server.domain.workspace.gateway.OrganizationRepository
 import org.graphoenix.server.domain.workspace.gateway.WorkspaceRepository
 import org.graphoenix.server.domain.workspace.valueobject.OrganizationId
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class CreateWorkspaceTest {
-  private val mockWorkspaceRepository = mockk<WorkspaceRepository>()
-  private val mockOrganizationRepository = mockk<OrganizationRepository>()
-  private val createWorkspace = CreateWorkspace(mockWorkspaceRepository, mockOrganizationRepository)
+  @MockK
+  private lateinit var mockWorkspaceRepository: WorkspaceRepository
+
+  @MockK
+  private lateinit var mockOrganizationRepository: OrganizationRepository
+
+  @InjectMockKs
+  private lateinit var createWorkspace: CreateWorkspace
 
   @Test
   fun `should throw if request Org ID is not found`() =
@@ -31,7 +43,7 @@ class CreateWorkspaceTest {
       // When and then
       expect {
         runBlocking { createWorkspace(dummyRequest) {} }
-      }.toThrow<OrganizationNotFoundException>()
+      }.toThrow<WorkspaceException.OrganizationNotFound>()
     }
 
   @Test

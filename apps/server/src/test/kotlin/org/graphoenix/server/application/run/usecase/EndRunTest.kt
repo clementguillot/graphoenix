@@ -4,7 +4,9 @@ import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.mockk.coEvery
-import io.mockk.mockk
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
@@ -13,13 +15,23 @@ import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.*
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
 
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class EndRunTest {
-  private val mockRunRepository = mockk<RunRepository>()
-  private val mockTaskRepository = mockk<TaskRepository>()
-  private val mockArtifactRepository = mockk<ArtifactRepository>()
-  private val endRun = EndRun(mockRunRepository, mockTaskRepository, mockArtifactRepository)
+  @MockK
+  private lateinit var mockRunRepository: RunRepository
+
+  @MockK
+  private lateinit var mockTaskRepository: TaskRepository
+
+  @MockK
+  private lateinit var mockArtifactRepository: ArtifactRepository
+
+  @InjectMockKs
+  private lateinit var endRun: EndRun
 
   @Test
   fun `should return a success run if all tasks are OK`() =

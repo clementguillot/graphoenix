@@ -1,7 +1,6 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.its
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending
@@ -31,6 +30,66 @@ class RunPanacheRepositoryTest {
       runPanacheRepository.deleteAll().awaitSuspending()
     }
   }
+
+  @Test
+  fun `should find all runs by their end date from the DB`() =
+    runTest {
+      // Given
+      val dummyRuns =
+        listOf(
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+        )
+      val thresholdDate = LocalDateTime.now()
+      runPanacheRepository.persist(dummyRuns).awaitSuspending()
+
+      // When
+      val result = runPanacheRepository.findAllByCreationDateOlderThan(thresholdDate).toList()
+
+      // Then
+      expect(result.size).toEqual(2)
+    }
+
+  @Test
+  fun `should find all runs by their workspace ID`() =
+    runTest {
+      // Given
+      val dummyWorkspaceId = ObjectId()
+      val dummyWorkspaces =
+        listOf(
+          buildRunEntity(workspaceId = dummyWorkspaceId),
+          buildRunEntity(workspaceId = dummyWorkspaceId),
+          buildRunEntity(workspaceId = ObjectId()),
+        )
+      runPanacheRepository.persist(dummyWorkspaces).awaitSuspending()
+
+      // When
+      val resultPage0 = runPanacheRepository.findPageByWorkspaceId(WorkspaceId(dummyWorkspaceId.toString()), 0, 10)
+      val resultPage1 = runPanacheRepository.findPageByWorkspaceId(WorkspaceId(dummyWorkspaceId.toString()), 1, 10)
+
+      // Then
+      expect(resultPage0) {
+        its { totalCount }.toEqual(2)
+        its {
+          items.map { it.id.value }
+        }.toContainExactlyElementsOf(
+          dummyWorkspaces
+            .filter { it.workspaceId == dummyWorkspaceId }
+            .map { it.id.toString() },
+        )
+        its {
+          items.map { it.workspaceId.value }
+        }.toContainExactlyElementsOf(
+          dummyWorkspaces
+            .filter { it.workspaceId == dummyWorkspaceId }
+            .map { it.workspaceId.toString() },
+        )
+      }
+      expect(resultPage1) {
+        its { totalCount }.toEqual(2)
+        its { items.size }.toEqual(0)
+      }
+    }
 
   @Test
   fun `should create a new run in the DB`() =
@@ -134,25 +193,6 @@ class RunPanacheRepositoryTest {
     }
 
   @Test
-  fun `should find all runs by their end date from the DB`() =
-    runTest {
-      // Given
-      val dummyRuns =
-        listOf(
-          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
-          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
-        )
-      val thresholdDate = LocalDateTime.now()
-      runPanacheRepository.persist(dummyRuns).awaitSuspending()
-
-      // When
-      val result = runPanacheRepository.findAllByCreationDateOlderThan(thresholdDate).toList()
-
-      // Then
-      expect(result.size).toEqual(2)
-    }
-
-  @Test
   fun `should delete a run by its ID from the DB`() =
     runTest {
       // Given
@@ -184,10 +224,11 @@ class RunPanacheRepositoryTest {
   fun buildRunEntity(
     id: ObjectId? = null,
     endTime: LocalDateTime = LocalDateTime.now(),
+    workspaceId: ObjectId = ObjectId(),
   ): RunEntity =
     RunEntity(
       id = id,
-      workspaceId = ObjectId(),
+      workspaceId = workspaceId,
       command = "test command",
       status = "SUCCESS",
       startTime = LocalDateTime.now(),

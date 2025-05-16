@@ -1,0 +1,12 @@
+packages:
+  - apps/console
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - core-js-pure
+  - esbuild
+  - nx
+  - unrs-resolver
+  - vue-demi

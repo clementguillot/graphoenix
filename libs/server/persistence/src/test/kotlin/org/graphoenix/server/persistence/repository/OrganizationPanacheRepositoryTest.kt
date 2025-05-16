@@ -1,6 +1,6 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending
@@ -54,5 +54,41 @@ class OrganizationPanacheRepositoryTest {
       // Then
       expect(existingId).toEqual(true)
       expect(invalidId).toEqual(false)
+    }
+
+  @Test
+  fun `should find an organization by its ID`() =
+    runTest {
+      // Given
+      val dummyOrganization = organizationPanacheRepository.create("organization")
+
+      // When
+      val resultFound = organizationPanacheRepository.findById(dummyOrganization.id)
+      val resultNotFound = organizationPanacheRepository.findById(OrganizationId(ObjectId().toString()))
+
+      // Then
+      expect(resultFound).toEqual(dummyOrganization)
+      expect(resultNotFound).toEqual(null)
+    }
+
+  @Test
+  fun `should find all organizations`() =
+    runTest {
+      // Given
+      val dummyOrgs =
+        listOf(
+          organizationPanacheRepository.create("organization A"),
+          organizationPanacheRepository.create("organization B"),
+          organizationPanacheRepository.create("organization C"),
+        )
+
+      // When
+      val result = organizationPanacheRepository.findAllOrgs()
+
+      // Then
+      expect(result) {
+        its { size }.toEqual(3)
+        toContainExactlyElementsOf(dummyOrgs)
+      }
     }
 }
