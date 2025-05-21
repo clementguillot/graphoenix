@@ -1,6 +1,6 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending
@@ -105,7 +105,7 @@ class TaskPanacheRepositoryTest {
     runTest {
       // Given
       val dummyRunId = ObjectId()
-      val dummyTaskEntities = listOf(buildTaskEntity(dummyRunId))
+      val dummyTaskEntities = listOf(buildTaskEntity(runId = dummyRunId))
       taskPanacheRepository.persist(dummyTaskEntities).awaitSuspending()
 
       // When
@@ -117,11 +117,73 @@ class TaskPanacheRepositoryTest {
     }
 
   @Test
+  fun `should find a page of tasks by their run ID and workspace ID`() =
+    runTest {
+      // Given
+      val dummyRunId = ObjectId()
+      val dummyWorkspaceId = ObjectId()
+      val dummyTasks =
+        listOf(
+          buildTaskEntity(taskId = "A", runId = dummyRunId, workspaceId = dummyWorkspaceId),
+          buildTaskEntity(taskId = "B", runId = dummyRunId, workspaceId = dummyWorkspaceId),
+          buildTaskEntity(taskId = "C", runId = dummyRunId, workspaceId = ObjectId()),
+          buildTaskEntity(taskId = "D", runId = ObjectId(), workspaceId = dummyWorkspaceId),
+        )
+      taskPanacheRepository.persist(dummyTasks).awaitSuspending()
+
+      // When
+      val resultPage0 =
+        taskPanacheRepository.findPageByRunIdAndWorkspaceId(
+          RunId(dummyRunId.toString()),
+          WorkspaceId(dummyWorkspaceId.toString()),
+          0,
+          10,
+        )
+      val resultPage1 =
+        taskPanacheRepository.findPageByRunIdAndWorkspaceId(
+          RunId(dummyRunId.toString()),
+          WorkspaceId(dummyWorkspaceId.toString()),
+          1,
+          10,
+        )
+
+      // Then
+      expect(resultPage0) {
+        its { totalCount }.toEqual(2)
+        its {
+          items.map { it.taskId.value }
+        }.toContain.inAnyOrder.only.elementsOf(
+          dummyTasks
+            .filter { it.workspaceId == dummyWorkspaceId && it.runId == dummyRunId }
+            .map { it.taskId },
+        )
+        its {
+          items.map { it.runId.value }
+        }.toContain.inAnyOrder.only.elementsOf(
+          dummyTasks
+            .filter { it.workspaceId == dummyWorkspaceId && it.runId == dummyRunId }
+            .map { it.runId.toString() },
+        )
+        its {
+          items.map { it.workspaceId.value }
+        }.toContain.inAnyOrder.only.elementsOf(
+          dummyTasks
+            .filter { it.workspaceId == dummyWorkspaceId && it.runId == dummyRunId }
+            .map { it.workspaceId.toString() },
+        )
+      }
+      expect(resultPage1) {
+        its { totalCount }.toEqual(2)
+        its { items.size }.toEqual(0)
+      }
+    }
+
+  @Test
   fun `should delete tasks by their run ID`() =
     runTest {
       // Given
       val dummyRunId = ObjectId()
-      val dummyTaskEntities = listOf(buildTaskEntity(dummyRunId))
+      val dummyTaskEntities = listOf(buildTaskEntity(runId = dummyRunId))
       taskPanacheRepository.persist(dummyTaskEntities).awaitSuspending()
 
       // When
@@ -131,12 +193,16 @@ class TaskPanacheRepositoryTest {
       expect(result).toEqual(1)
     }
 
-  private fun buildTaskEntity(runId: ObjectId = ObjectId()): TaskEntity =
+  private fun buildTaskEntity(
+    taskId: String = "task123",
+    runId: ObjectId = ObjectId(),
+    workspaceId: ObjectId = ObjectId(),
+  ): TaskEntity =
     TaskEntity(
       id = null,
       runId = runId,
-      workspaceId = ObjectId(),
-      taskId = "task123",
+      workspaceId = workspaceId,
+      taskId = taskId,
       hash = "hash123",
       projectName = "project",
       target = "target",

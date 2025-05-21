@@ -14,7 +14,7 @@ fun RunEntity.toDomain(objectMapper: ObjectMapper): Run =
     id = RunId(this@toDomain.id.toString())
     workspaceId = WorkspaceId(this@toDomain.workspaceId.toString())
     command = this@toDomain.command
-    status = RunStatus.valueOf(this@toDomain.status)
+    status = this@toDomain.status
     startTime = this@toDomain.startTime
     endTime = this@toDomain.endTime
     branch = this@toDomain.branch
@@ -47,7 +47,7 @@ fun RunEntity.toDomain(objectMapper: ObjectMapper): Run =
           platformName = vcsContext.platformName,
         )
       }
-    linkId = this@toDomain.linkId
+    linkId = LinkId(this@toDomain.linkId)
     projectGraph =
       this@toDomain.projectGraph?.let { projectGraph ->
         ProjectGraph(
@@ -100,7 +100,7 @@ fun RunEntity.toDomain(objectMapper: ObjectMapper): Run =
   }
 
 fun CreateRunCommand.toEntity(
-  status: RunStatus,
+  status: Int,
   workspaceId: WorkspaceId,
   objectMapper: ObjectMapper,
 ): RunEntity =
@@ -108,7 +108,7 @@ fun CreateRunCommand.toEntity(
     id = null,
     workspaceId = ObjectId(workspaceId.value),
     command = command,
-    status = status.name,
+    status = status,
     startTime = startTime,
     endTime = endTime,
     branch = branch,
@@ -141,7 +141,7 @@ fun CreateRunCommand.toEntity(
           platformName = vcsContext.platformName,
         )
       },
-    linkId = linkId,
+    linkId = linkId.value,
     projectGraph =
       projectGraph?.let { projectGraph ->
         RunEntity.ProjectGraph(

@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1747838015369-1
+      author: clementguillot
+      changes:
+        - runCommand:
+            command: |-
+              {
+                "update": "run",
+                "updates": [
+                  {
+                    "q": {},
+                    "u": { "$unset": { "status": "" } },
+                    "multi": true
+                  }
+                ]
+              }
+        - runCommand:
+            command: |-
+              {
+                aggregate: "task",
+                pipeline: [
+                  {
+                    "$group": {
+                      "_id": "$runId",
+                      "maxStatus": { "$max": "$status" }
+                    }
+                  },
+                  {
+                    "$project": {
+                      "_id": 1,
+                      "status": "$maxStatus"
+                    }
+                  },
+                  {
+                    "$merge": {
+                      into: "run",
+                      on: "_id",
+                      "whenMatched": "merge",
+                      whenNotMatched: "discard"
+                    }
+                  }
+                ],
+                cursor: {}
+              }

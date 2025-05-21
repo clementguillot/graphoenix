@@ -2,3 +2,9 @@ databaseChangeLog:
   - include:
       relativeToChangelogFile: true
       file: changes/1730584515585-set-run-project-graph-null.yaml
+  - include:
+      relativeToChangelogFile: true
+      file: changes/1747833068178-set-task-not-null-values.yaml
+  - include:
+      relativeToChangelogFile: true
+      file: changes/1747838015369-update-run-status-using-task-status.yaml

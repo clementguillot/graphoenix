@@ -2,38 +2,33 @@ package org.graphoenix.server.presentation.http.controller
 
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
-import jakarta.inject.Inject
-import kotlinx.coroutines.test.runTest
-import org.graphoenix.server.domain.workspace.gateway.OrganizationRepository
-import org.graphoenix.server.presentation.http.controller.dto.CreateOrgAndWorkspaceDto
-import org.graphoenix.server.presentation.http.controller.dto.CreateWorkspaceDto
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.notNullValue
+import org.graphoenix.server.createOrg
+import org.graphoenix.server.presentation.http.controller.dto.*
+import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.jupiter.api.Test
 
 @QuarkusTest
 class WorkspaceControllerTest {
-  @Inject
-  lateinit var orgRepository: OrganizationRepository
-
   @Test
-  fun `should return new workspace ID`() =
-    runTest {
-      val newOrg = orgRepository.create("dummy org")
+  fun `should return new workspace ID`() {
+    // Given
+    val newOrgId = createOrg()
 
-      given()
-        .header("Content-Type", "application/json")
-        .body(
-          CreateWorkspaceDto(
-            orgId = newOrg.id.value,
-            name = "new workspace",
-          ),
-        ).`when`()
-        .post("/private/create-workspace")
-        .then()
-        .statusCode(200)
-        .body("id", `is`(notNullValue()))
-    }
+    // When
+    given()
+      .header("Content-Type", "application/json")
+      .body(
+        CreateWorkspaceDto(
+          orgId = newOrgId.id,
+          name = "new workspace",
+        ),
+      ).`when`()
+      .post("/private/create-workspace")
+      .then()
+      .statusCode(200)
+      .body("id", `is`(notNullValue()))
+  }
 
   @Test
   fun `should initialize a new workspace and return an access token`() {
@@ -51,4 +46,52 @@ class WorkspaceControllerTest {
       .statusCode(200)
       .body("token", `is`(notNullValue()), "url", `is`(notNullValue()))
   }
+
+  @Test
+  fun `should get all workspaces by their organization ID`() {
+    // Given
+    val newOrgId = createOrg()
+    val newWorkspaceIds =
+      listOf(
+        createWorkspace(newOrgId.id, "my new workspace A"),
+        createWorkspace(newOrgId.id, "my new workspace B"),
+      )
+
+    // When
+    given()
+      .`when`()
+      .get("/private/organizations/${newOrgId.id}/workspaces")
+      .then()
+      .statusCode(200)
+      .body("size()", greaterThanOrEqualTo(2))
+      .body("findAll { it.id == '%s' }.name".format(newWorkspaceIds[0].id), hasItem("my new workspace A"))
+      .body("findAll { it.id == '%s' }.name".format(newWorkspaceIds[1].id), hasItem("my new workspace B"))
+  }
+
+  @Test
+  fun `should get a workspace by its ID and org ID`() {
+    // Given
+    val newOrgId = createOrg()
+    val newWorkspaceId = createWorkspace(newOrgId.id)
+
+    // When
+    given()
+      .`when`()
+      .get("/private/organizations/${newOrgId.id}/workspaces/${newWorkspaceId.id}")
+      .then()
+      .statusCode(200)
+      .body("id", `is`(newWorkspaceId.id))
+      .body("name", `is`("my new workspace"))
+  }
+
+  private fun createWorkspace(
+    orgId: String,
+    workspaceName: String = "my new workspace",
+  ): IdDto =
+    given()
+      .header("Content-Type", "application/json")
+      .body(CreateWorkspaceDto(orgId, workspaceName))
+      .`when`()
+      .post("/private/create-workspace")
+      .`as`(IdDto::class.java)
 }

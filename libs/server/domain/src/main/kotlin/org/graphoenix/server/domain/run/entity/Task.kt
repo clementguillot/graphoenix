@@ -22,9 +22,9 @@ class Task private constructor(
   val projectName: String
   val target: String
   val startTime: LocalDateTime
-  val endTime: LocalDateTime?
-  val cacheStatus: CacheStatus?
-  val status: Int?
+  val endTime: LocalDateTime
+  val cacheStatus: CacheStatus
+  val status: Int
   val uploadedToStorage: Boolean
   val terminalOutputUploadedToFileStorage: Boolean
   val isCacheable: Boolean
@@ -43,6 +43,9 @@ class Task private constructor(
     requireNotNull(builder.projectName)
     requireNotNull(builder.target)
     requireNotNull(builder.startTime)
+    requireNotNull(builder.endTime)
+    requireNotNull(builder.cacheStatus)
+    requireNotNull(builder.status)
     requireNotNull(builder.uploadedToStorage)
     requireNotNull(builder.terminalOutputUploadedToFileStorage)
     requireNotNull(builder.isCacheable)
@@ -57,9 +60,9 @@ class Task private constructor(
     projectName = builder.projectName!!
     target = builder.target!!
     startTime = builder.startTime!!
-    endTime = builder.endTime
-    cacheStatus = builder.cacheStatus
-    status = builder.status
+    endTime = builder.endTime!!
+    cacheStatus = builder.cacheStatus!!
+    status = builder.status!!
     uploadedToStorage = builder.uploadedToStorage!!
     terminalOutputUploadedToFileStorage = builder.terminalOutputUploadedToFileStorage!!
     isCacheable = builder.isCacheable!!

@@ -9,7 +9,7 @@ data class RunEntity(
   var id: ObjectId?,
   var workspaceId: ObjectId,
   var command: String,
-  var status: String,
+  var status: Int,
   var startTime: LocalDateTime,
   var endTime: LocalDateTime,
   var branch: String?,

@@ -14,7 +14,7 @@ data class RunSummaryDto(
       applicationUrl: String,
     ): RunSummaryDto =
       RunSummaryDto(
-        runUrl = "$applicationUrl/runs/${response.run.linkId}",
+        runUrl = "$applicationUrl/runs/${response.run.linkId.value}",
         status = "success",
       )
   }

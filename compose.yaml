@@ -42,10 +42,44 @@ services:
     depends_on:
       - minio
     environment:
-      MINIO_ACCESS_KEY: 'graphoenix'
-      MINIO_SECRET_KEY: 'graphoenix'
-
+      MINIO_ACCESS_KEY: "graphoenix"
+      MINIO_SECRET_KEY: "graphoenix"
+  postgres:
+    image: postgres:17.4
+    environment:
+      POSTGRES_PASSWORD: pg-root
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./bootstrap/pg:/docker-entrypoint-initdb.d:z
+    ports:
+      - "5432:5432"
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.0
+    command: ["start-dev", "--import-realm"]
+    depends_on:
+      - postgres
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - ./bootstrap/keycloak:/opt/keycloak/data/import
+    ports:
+      - "8090:8080"
+  reverse-proxy:
+    image: nginx:1.27.5-alpine
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./bootstrap/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 volumes:
   mongo-config-data:
   mongo-db-data:
   minio-data:
+  postgres-data:

@@ -6,7 +6,6 @@ import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
 import org.graphoenix.server.domain.run.entity.*
 import org.graphoenix.server.domain.run.gateway.*
-import org.graphoenix.server.domain.run.valueobject.RunStatus
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 
 @ApplicationScoped
@@ -27,11 +26,7 @@ class EndRun(
     return presenter(EndRunResponse(run = run))
   }
 
-  private fun getRunStatus(tasks: Collection<CreateTaskCommand>): RunStatus =
-    when (tasks.any { it.status != 0 }) {
-      true -> RunStatus.FAILURE
-      false -> RunStatus.SUCCESS
-    }
+  private fun getRunStatus(tasks: Collection<CreateTaskCommand>): Int = tasks.maxOf { it.status }
 
   private suspend fun createTaskArtifacts(
     tasks: Collection<Task>,

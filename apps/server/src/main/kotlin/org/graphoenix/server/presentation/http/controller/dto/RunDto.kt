@@ -69,13 +69,13 @@ sealed class RunDto {
         machineInfo = machineInfo,
         meta = meta,
         vcsContext = vcsContext,
-        linkId = linkId ?: buildLinkId(),
+        linkId = LinkId(linkId ?: buildLinkId()),
         projectGraph = projectGraph,
         hashedContributors = hashedContributors,
         sha = run.sha,
       )
 
-    fun toTaskRequests(): List<CreateTaskCommand> =
+    fun toTaskRequests(runEndTime: LocalDateTime): List<CreateTaskCommand> =
       tasks.map { task ->
         CreateTaskCommand(
           taskId = task.taskId,
@@ -83,9 +83,9 @@ sealed class RunDto {
           projectName = task.projectName,
           target = task.target,
           startTime = task.startTime,
-          endTime = task.endTime,
-          cacheStatus = task.cacheStatus?.let { CacheStatus.from(it) },
-          status = task.status,
+          endTime = task.endTime ?: runEndTime,
+          cacheStatus = task.cacheStatus?.let { CacheStatus.from(it) } ?: CacheStatus.CACHE_MISS,
+          status = task.status ?: 2,
           uploadedToStorage = task.uploadedToStorage,
           terminalOutputUploadedToFileStorage = task.terminalOutputUploadedToFileStorage,
           isCacheable = task.isCacheable,

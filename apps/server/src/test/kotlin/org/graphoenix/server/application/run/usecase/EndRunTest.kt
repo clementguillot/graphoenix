@@ -4,7 +4,9 @@ import ch.tutteli.atrium.api.fluent.en_GB.notToEqualNull
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.mockk.coEvery
-import io.mockk.mockk
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.command.CreateRunCommand
 import org.graphoenix.server.domain.run.command.CreateTaskCommand
@@ -13,13 +15,23 @@ import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.*
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
 
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class EndRunTest {
-  private val mockRunRepository = mockk<RunRepository>()
-  private val mockTaskRepository = mockk<TaskRepository>()
-  private val mockArtifactRepository = mockk<ArtifactRepository>()
-  private val endRun = EndRun(mockRunRepository, mockTaskRepository, mockArtifactRepository)
+  @MockK
+  private lateinit var mockRunRepository: RunRepository
+
+  @MockK
+  private lateinit var mockTaskRepository: TaskRepository
+
+  @MockK
+  private lateinit var mockArtifactRepository: ArtifactRepository
+
+  @InjectMockKs
+  private lateinit var endRun: EndRun
 
   @Test
   fun `should return a success run if all tasks are OK`() =
@@ -34,11 +46,11 @@ class EndRunTest {
           tasks = requestTasks,
           workspaceId = workspaceId,
         )
-      val domainRun = runRequestToDomain(requestRun, RunStatus.SUCCESS, workspaceId)
+      val domainRun = runRequestToDomain(requestRun, 0, workspaceId)
       val domainTasks = requestTasks.map { taskRequestToDomain(it, domainRun.id, workspaceId) }
       var remoteArtifactSize: Int? = null
 
-      coEvery { mockRunRepository.create(requestRun, RunStatus.SUCCESS, workspaceId) } returns domainRun
+      coEvery { mockRunRepository.create(requestRun, 0, workspaceId) } returns domainRun
       coEvery { mockTaskRepository.create(requestTasks, domainRun.id, workspaceId) } returns domainTasks
       coEvery { mockArtifactRepository.createRemoteArtifacts(any(), workspaceId) } answers {
         remoteArtifactSize = firstArg<Map<ArtifactId, Hash>>().size
@@ -57,7 +69,7 @@ class EndRunTest {
       val response = endRun(request) { it.run }
 
       // Then
-      expect(response.status).toEqual(RunStatus.SUCCESS)
+      expect(response.status).toEqual(0)
       expect(remoteArtifactSize).notToEqualNull().toEqual(1)
     }
 
@@ -74,10 +86,10 @@ class EndRunTest {
           tasks = requestTasks,
           workspaceId = workspaceId,
         )
-      val domainRun = runRequestToDomain(requestRun, RunStatus.FAILURE, workspaceId)
+      val domainRun = runRequestToDomain(requestRun, 1, workspaceId)
       val domainTasks = requestTasks.map { taskRequestToDomain(it, domainRun.id, workspaceId) }
 
-      coEvery { mockRunRepository.create(requestRun, RunStatus.FAILURE, workspaceId) } returns domainRun
+      coEvery { mockRunRepository.create(requestRun, 1, workspaceId) } returns domainRun
       coEvery { mockTaskRepository.create(requestTasks, domainRun.id, workspaceId) } returns domainTasks
       coEvery { mockArtifactRepository.createRemoteArtifacts(any(), workspaceId) } answers {
         firstArg<Map<ArtifactId, Hash>>().map {
@@ -95,7 +107,7 @@ class EndRunTest {
       val response = endRun(request) { it.run }
 
       // Then
-      expect(response.status).toEqual(RunStatus.FAILURE)
+      expect(response.status).toEqual(1)
     }
 
   private fun buildRequestRun(): CreateRunCommand =
@@ -112,7 +124,7 @@ class EndRunTest {
       machineInfo = MachineInfo("machine-id", "platform", "version", 32),
       meta = mapOf("nxCloudVersion" to "123"),
       vcsContext = null,
-      linkId = "test link id",
+      linkId = LinkId("test link id"),
       projectGraph = null,
       hashedContributors = null,
       sha = null,
@@ -150,7 +162,7 @@ class EndRunTest {
 
   private fun runRequestToDomain(
     run: CreateRunCommand,
-    status: RunStatus,
+    status: Int,
     workspaceId: WorkspaceId,
   ): Run =
     Run {

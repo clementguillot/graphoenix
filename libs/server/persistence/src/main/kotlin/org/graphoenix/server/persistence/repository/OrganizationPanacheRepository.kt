@@ -1,6 +1,7 @@
 package org.graphoenix.server.persistence.repository
 
 import io.quarkus.mongodb.panache.kotlin.reactive.ReactivePanacheMongoRepository
+import io.quarkus.panache.common.Sort
 import io.smallrye.mutiny.coroutines.awaitSuspending
 import jakarta.enterprise.context.ApplicationScoped
 import org.bson.types.ObjectId
@@ -17,8 +18,16 @@ class OrganizationPanacheRepository :
   override suspend fun create(name: String): Organization {
     val entity = OrganizationEntity(id = null, name = name)
 
-    return persist(entity).awaitSuspending().run { entity.toDomain() }
+    return persist(entity).awaitSuspending().toDomain()
   }
 
   override suspend fun isValidOrgId(id: OrganizationId): Boolean = findById(ObjectId(id.value)).awaitSuspending() !== null
+
+  override suspend fun findById(id: OrganizationId): Organization? = findById(ObjectId(id.value)).awaitSuspending()?.toDomain()
+
+  override suspend fun findAllOrgs(): Collection<Organization> =
+    findAll(Sort.by("name", Sort.Direction.Ascending))
+      .list()
+      .awaitSuspending()
+      .map { it.toDomain() }
 }
