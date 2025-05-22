@@ -57,7 +57,7 @@ fun CreateTaskCommand.toEntity(
     target = target,
     startTime = startTime,
     endTime = endTime,
-    cacheStatus = cacheStatus?.value,
+    cacheStatus = cacheStatus.value,
     status = status,
     uploadedToStorage = uploadedToStorage,
     terminalOutputUploadedToFileStorage = terminalOutputUploadedToFileStorage,
