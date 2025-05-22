@@ -1,0 +1,11 @@
+FROM node:22.15.0-alpine
+
+RUN mkdir -p /opt/console
+WORKDIR /opt/console
+
+COPY --chown=node /.output/ .
+
+EXPOSE 3000
+USER node
+
+ENTRYPOINT [ "node", "/opt/console/server/index.mjs" ]

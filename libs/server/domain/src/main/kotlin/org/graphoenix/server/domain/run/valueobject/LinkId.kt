@@ -1,6 +1,6 @@
 package org.graphoenix.server.domain.run.valueobject
 
-enum class RunStatus {
-  SUCCESS,
-  FAILURE,
-}
+@JvmInline
+value class LinkId(
+  val value: String,
+)

@@ -13,8 +13,8 @@ class GetWorkspaceAccessToken(
     request: GetWorkspaceAccessTokenRequest,
     presenter: (GetWorkspaceAccessTokenResponse) -> T,
   ): T =
-    accessTokenRepository.findByEncodedValue(request.encodedAccessToken).run {
-      presenter(GetWorkspaceAccessTokenResponse(accessToken = this))
+    accessTokenRepository.findByEncodedValue(request.encodedAccessToken).let { token ->
+      presenter(GetWorkspaceAccessTokenResponse(accessToken = token))
     }
 }
 

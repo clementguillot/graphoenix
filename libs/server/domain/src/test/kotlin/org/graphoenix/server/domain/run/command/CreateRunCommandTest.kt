@@ -2,6 +2,7 @@ package org.graphoenix.server.domain.run.command
 
 import ch.tutteli.atrium.api.fluent.en_GB.toBeAnInstanceOf
 import ch.tutteli.atrium.api.verbs.expect
+import org.graphoenix.server.domain.run.valueobject.LinkId
 import org.graphoenix.server.domain.run.valueobject.MachineInfo
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -32,7 +33,7 @@ class CreateRunCommandTest {
         projectGraph = null,
         vcsContext = null,
         hashedContributors = null,
-        linkId = "link-id",
+        linkId = LinkId("link-id"),
       ),
     ).toBeAnInstanceOf<CreateRunCommand>()
   }

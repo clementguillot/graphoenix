@@ -1,0 +1,21 @@
+{
+  "name": "apps/console",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/console/src",
+  "targets": {
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "options": {
+        "engine": "docker",
+        "context": "apps/console",
+        "file": "apps/console/docker/Dockerfile.alpine",
+        "metadata": {
+          "images": ["ghcr.io/clementguillot/graphoenix-console"],
+          "tags": ["type=schedule", "type=sha,prefix=", "latest"]
+        }
+      }
+    }
+  }
+}

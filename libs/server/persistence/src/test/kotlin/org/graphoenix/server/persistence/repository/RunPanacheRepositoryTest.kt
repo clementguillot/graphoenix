@@ -1,7 +1,6 @@
 package org.graphoenix.server.persistence.repository
 
-import ch.tutteli.atrium.api.fluent.en_GB.its
-import ch.tutteli.atrium.api.fluent.en_GB.toEqual
+import ch.tutteli.atrium.api.fluent.en_GB.*
 import ch.tutteli.atrium.api.verbs.expect
 import io.quarkus.test.junit.QuarkusTest
 import io.smallrye.mutiny.coroutines.awaitSuspending
@@ -31,6 +30,88 @@ class RunPanacheRepositoryTest {
       runPanacheRepository.deleteAll().awaitSuspending()
     }
   }
+
+  @Test
+  fun `should find all runs by their end date from the DB`() =
+    runTest {
+      // Given
+      val dummyRuns =
+        listOf(
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
+        )
+      val thresholdDate = LocalDateTime.now()
+      runPanacheRepository.persist(dummyRuns).awaitSuspending()
+
+      // When
+      val result = runPanacheRepository.findAllByCreationDateOlderThan(thresholdDate).toList()
+
+      // Then
+      expect(result.size).toEqual(2)
+    }
+
+  @Test
+  fun `should find a page of runs by their workspace ID`() =
+    runTest {
+      // Given
+      val dummyWorkspaceId = ObjectId()
+      val dummyRuns =
+        listOf(
+          buildRunEntity(workspaceId = dummyWorkspaceId),
+          buildRunEntity(workspaceId = dummyWorkspaceId),
+          buildRunEntity(workspaceId = ObjectId()),
+        )
+      runPanacheRepository.persist(dummyRuns).awaitSuspending()
+
+      // When
+      val resultPage0 = runPanacheRepository.findPageByWorkspaceId(WorkspaceId(dummyWorkspaceId.toString()), 0, 10)
+      val resultPage1 = runPanacheRepository.findPageByWorkspaceId(WorkspaceId(dummyWorkspaceId.toString()), 1, 10)
+
+      // Then
+      expect(resultPage0) {
+        its { totalCount }.toEqual(2)
+        its {
+          items.map { it.id.value }
+        }.toContain.inAnyOrder.only.elementsOf(
+          dummyRuns
+            .filter { it.workspaceId == dummyWorkspaceId }
+            .map { it.id.toString() },
+        )
+        its {
+          items.map { it.workspaceId.value }
+        }.toContain.inAnyOrder.only.elementsOf(
+          dummyRuns
+            .filter { it.workspaceId == dummyWorkspaceId }
+            .map { it.workspaceId.toString() },
+        )
+      }
+      expect(resultPage1) {
+        its { totalCount }.toEqual(2)
+        its { items.size }.toEqual(0)
+      }
+    }
+
+  @Test
+  fun `should find a run by its ID and workspace ID`() =
+    runTest {
+      // Given
+      val dummyWorkspaceId = ObjectId()
+      val dummyRun = buildRunEntity(workspaceId = dummyWorkspaceId)
+      runPanacheRepository.persist(dummyRun).awaitSuspending()
+
+      // When
+      val foundRun = runPanacheRepository.findByLinkId(LinkId(dummyRun.linkId))
+      val notFoundRun = runPanacheRepository.findByLinkId(LinkId("random"))
+
+      // Then
+      expect(foundRun).toBeAnInstanceOf<Run>()
+      expect(foundRun!!) {
+        its { id.value }.toEqual(dummyRun.id.toString())
+        its { linkId.value }.toEqual(dummyRun.linkId)
+        its { workspaceId.value }.toEqual(dummyRun.workspaceId.toString())
+      }
+      expect(notFoundRun).toEqual(null)
+    }
 
   @Test
   fun `should create a new run in the DB`() =
@@ -70,7 +151,7 @@ class RunPanacheRepositoryTest {
               repositoryUrl = "https://github.com/clementguillot/graphoenix",
               platformName = "JUNIT",
             ),
-          linkId = "test-link",
+          linkId = LinkId("test-link"),
           projectGraph =
             ProjectGraph(
               nodes =
@@ -122,7 +203,7 @@ class RunPanacheRepositoryTest {
         )
 
       // When
-      val result = runPanacheRepository.create(runRequest, RunStatus.SUCCESS, workspaceId)
+      val result = runPanacheRepository.create(runRequest, 0, workspaceId)
       val decodedEntity = runPanacheRepository.findById(ObjectId(result.id.value)).awaitSuspending()
 
       // Then
@@ -131,25 +212,6 @@ class RunPanacheRepositoryTest {
         its { command }.toEqual("nx test apps/server")
       }
       expect(runPanacheRepository.count().awaitSuspending()).toEqual(1L)
-    }
-
-  @Test
-  fun `should find all runs by their end date from the DB`() =
-    runTest {
-      // Given
-      val dummyRuns =
-        listOf(
-          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
-          buildRunEntity(endTime = LocalDateTime.now().minusMinutes(60)),
-        )
-      val thresholdDate = LocalDateTime.now()
-      runPanacheRepository.persist(dummyRuns).awaitSuspending()
-
-      // When
-      val result = runPanacheRepository.findAllByCreationDateOlderThan(thresholdDate).toList()
-
-      // Then
-      expect(result.size).toEqual(2)
     }
 
   @Test
@@ -162,14 +224,14 @@ class RunPanacheRepositoryTest {
           id(dummyRunId.toString())
           workspaceId(UUID.randomUUID().toString())
           command = "test command"
-          status = RunStatus.SUCCESS
+          status = 0
           startTime = LocalDateTime.now()
           endTime = LocalDateTime.now()
           runGroup = "group"
           inner = true
           machineInfo = MachineInfo("machineId", "platform", "version", 4)
           meta = emptyMap()
-          linkId = "link-id"
+          linkId = LinkId("link-id")
         }
       runPanacheRepository.persist(buildRunEntity(id = dummyRunId)).awaitSuspending()
 
@@ -184,12 +246,14 @@ class RunPanacheRepositoryTest {
   fun buildRunEntity(
     id: ObjectId? = null,
     endTime: LocalDateTime = LocalDateTime.now(),
+    workspaceId: ObjectId = ObjectId(),
+    linkId: String = "test link id",
   ): RunEntity =
     RunEntity(
       id = id,
-      workspaceId = ObjectId(),
+      workspaceId = workspaceId,
       command = "test command",
-      status = "SUCCESS",
+      status = 0,
       startTime = LocalDateTime.now(),
       endTime = endTime,
       branch = "test branch",
@@ -214,7 +278,7 @@ class RunPanacheRepositoryTest {
           repositoryUrl = "test repository url",
           platformName = "test platform name",
         ),
-      linkId = "test link id",
+      linkId = linkId,
       projectGraph = null,
       hashedContributors = listOf("test hashed contributors"),
       sha = "test sha",

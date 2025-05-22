@@ -1,11 +1,14 @@
 package org.graphoenix.server.presentation.http.mapper
 
 import jakarta.ws.rs.core.Response
-import jakarta.ws.rs.ext.ExceptionMapper
-import jakarta.ws.rs.ext.Provider
-import org.graphoenix.server.application.workspace.exception.OrganizationNotFoundException
+import org.graphoenix.server.application.workspace.exception.WorkspaceException
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper
 
-@Provider
-class WorkspaceApplicationExceptionMapper : ExceptionMapper<OrganizationNotFoundException> {
-  override fun toResponse(exception: OrganizationNotFoundException): Response = Response.status(Response.Status.BAD_REQUEST).build()
+class WorkspaceApplicationExceptionMapper {
+  @ServerExceptionMapper
+  fun mapException(exception: WorkspaceException): Response =
+    when (exception) {
+      is WorkspaceException.NotFound -> Response.status(Response.Status.NOT_FOUND).build()
+      is WorkspaceException.OrganizationNotFound -> Response.status(Response.Status.BAD_REQUEST).build()
+    }
 }

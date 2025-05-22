@@ -3,6 +3,9 @@ package org.graphoenix.server.application.run.usecase
 import ch.tutteli.atrium.api.fluent.en_GB.toEqual
 import ch.tutteli.atrium.api.verbs.expect
 import io.mockk.*
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.graphoenix.server.domain.run.entity.*
@@ -10,15 +13,27 @@ import org.graphoenix.server.domain.run.gateway.*
 import org.graphoenix.server.domain.run.valueobject.*
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.time.LocalDateTime
 import java.util.*
 
+@ExtendWith(MockKExtension::class)
+@MockKExtension.CheckUnnecessaryStub
 class CleanupRunTest {
-  private val mockRunRepository = mockk<RunRepository>()
-  private val mockTaskRepository = mockk<TaskRepository>()
-  private val mockArtifactRepository = mockk<ArtifactRepository>()
-  private val mockStorageService = mockk<StorageService>()
-  private val cleanupRun = CleanupRun(mockRunRepository, mockTaskRepository, mockArtifactRepository, mockStorageService)
+  @MockK
+  private lateinit var mockRunRepository: RunRepository
+
+  @MockK
+  private lateinit var mockTaskRepository: TaskRepository
+
+  @MockK
+  private lateinit var mockArtifactRepository: ArtifactRepository
+
+  @MockK
+  private lateinit var mockStorageService: StorageService
+
+  @InjectMockKs
+  private lateinit var cleanupRun: CleanupRun
 
   @Test
   fun `should purge older runs and their data`() =
@@ -35,7 +50,6 @@ class CleanupRunTest {
 
       coEvery { mockRunRepository.findAllByCreationDateOlderThan(thresholdDate) } returns flowOf(*dummyRuns.toTypedArray())
       coEvery { mockTaskRepository.findAllByRunId(any()) } returns flowOf(*dummyTasks.toTypedArray())
-      coEvery { mockArtifactRepository.findByHash(any(), dummyRuns[0].workspaceId) } returns dummyArtifacts
 
       coEvery { mockStorageService.deleteArtifact(any(), dummyRuns[0].workspaceId) } just runs
       coEvery { mockArtifactRepository.delete(any()) } returns true
@@ -61,14 +75,14 @@ class CleanupRunTest {
       id(UUID.randomUUID().toString())
       workspaceId(UUID.randomUUID().toString())
       command = "test command"
-      status = RunStatus.SUCCESS
+      status = 0
       startTime = LocalDateTime.now()
       this.endTime = endTime
       runGroup = "group"
       inner = true
       machineInfo = MachineInfo("machineId", "platform", "version", 4)
       meta = emptyMap()
-      linkId = "link-id"
+      linkId = LinkId("link-id")
     }
 
   private fun buildTask(

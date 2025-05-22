@@ -2,7 +2,7 @@ package org.graphoenix.server.application.workspace.usecase
 
 import jakarta.enterprise.context.ApplicationScoped
 import org.graphoenix.server.application.UseCase
-import org.graphoenix.server.application.workspace.exception.OrganizationNotFoundException
+import org.graphoenix.server.application.workspace.exception.WorkspaceException
 import org.graphoenix.server.domain.workspace.entity.Workspace
 import org.graphoenix.server.domain.workspace.gateway.OrganizationRepository
 import org.graphoenix.server.domain.workspace.gateway.WorkspaceRepository
@@ -18,7 +18,7 @@ class CreateWorkspace(
     presenter: (CreateWorkspaceResponse) -> T,
   ): T {
     if (!organizationRepository.isValidOrgId(request.orgId)) {
-      throw OrganizationNotFoundException(request.orgId)
+      throw WorkspaceException.OrganizationNotFound("Organization ID '${request.orgId}' not found")
     }
     val workspace = workspaceGateway.create(request.name, request.orgId)
     return presenter(CreateWorkspaceResponse(workspace))

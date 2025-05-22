@@ -27,7 +27,7 @@ graphoenix-server:
       connection-string: mongodb://localhost:27017
   graphoenix-server:
     configuration:
-      application-url: http://localhost:8080
+      application-url: http://localhost:10000
     storage:
       type: s3
       s3:

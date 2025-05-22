@@ -16,7 +16,7 @@ data class CreateRunCommand(
   val machineInfo: MachineInfo,
   val meta: Map<String, String>,
   val vcsContext: VcsContext?,
-  val linkId: String,
+  val linkId: LinkId,
   val projectGraph: ProjectGraph?,
   val hashedContributors: Collection<String>?,
   val sha: String?,

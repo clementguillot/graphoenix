@@ -18,7 +18,7 @@ class Run private constructor(
   val id: RunId
   val workspaceId: WorkspaceId
   val command: String
-  val status: RunStatus
+  val status: Int
   val startTime: LocalDateTime
   val endTime: LocalDateTime
   val branch: String?
@@ -30,7 +30,7 @@ class Run private constructor(
   val machineInfo: MachineInfo
   val meta: Map<String, String>
   val vcsContext: VcsContext?
-  val linkId: String
+  val linkId: LinkId
   val projectGraph: ProjectGraph?
   val hashedContributors: Collection<String>?
   val sha: String?
@@ -72,7 +72,7 @@ class Run private constructor(
     var id: RunId? = null
     var workspaceId: WorkspaceId? = null
     var command: String? = null
-    var status: RunStatus? = null
+    var status: Int? = null
     var startTime: LocalDateTime? = null
     var endTime: LocalDateTime? = null
     var branch: String? = null
@@ -84,7 +84,7 @@ class Run private constructor(
     var machineInfo: MachineInfo? = null
     var meta: Map<String, String>? = null
     var vcsContext: VcsContext? = null
-    var linkId: String? = null
+    var linkId: LinkId? = null
     var projectGraph: ProjectGraph? = null
     var hashedContributors: Collection<String>? = null
     var sha: String? = null
