@@ -20,7 +20,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
   - name: mongodb
-    version: 16.4.12
+    version: 16.5.11
     repository: https://charts.bitnami.com/bitnami
     condition: mongodb.enabled
   - name: nginx
