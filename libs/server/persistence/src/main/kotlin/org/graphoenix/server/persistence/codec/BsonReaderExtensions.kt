@@ -16,7 +16,7 @@ inline fun <T> BsonReader.readRequiredField(
   fieldName: String,
   reader: BsonReader.() -> T,
 ): T {
-  readName()
+  readName(fieldName)
   return reader()
 }
 
@@ -24,7 +24,7 @@ inline fun <T> BsonReader.readNullableField(
   fieldName: String,
   reader: BsonReader.() -> T,
 ): T? {
-  readName()
+  readName(fieldName)
   return when (currentBsonType) {
     BsonType.NULL -> {
       readNull()
