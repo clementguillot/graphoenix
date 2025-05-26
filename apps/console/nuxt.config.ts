@@ -28,7 +28,22 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   runtimeConfig: {
-    graphoenixServer: "http://localhost:8080",
+    // Graphoenix Server endpoint
+    graphoenixServer: "",
+    // Required OAuth provider to set
+    oauthProvider: "",
+    // Default OAuth provider settings to ensure integration with Graphoenix
+    oauth: {
+      auth0: {
+        scope: ["openid", "email"],
+      },
+      github: {
+        scope: ["user:email"],
+      },
+      microsoft: {
+        scope: ["openid", "email"],
+      },
+    },
   },
   srcDir: "src",
   workspaceDir: "../../",
