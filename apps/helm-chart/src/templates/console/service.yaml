@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+{{- if .Values.console.service.annotations }}
+  annotations:
+  {{- range $key, $value := .Values.console.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+  name: {{ template "graphoenix.console.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "graphoenix.labels" (dict "context" . "component" .Values.console.name "name" .Values.console.name) | nindent 4 }}
+{{- if .Values.console.service.labels }}
+{{- toYaml .Values.console.service.labels | nindent 4 }}
+{{- end }}
+
+spec:
+  type: {{ .Values.console.service.type }}
+  ports:
+    - name: {{ .Values.console.service.servicePortHttpName }}
+      protocol: TCP
+      port: {{ .Values.console.service.servicePortHttp }}
+      targetPort: {{ .Values.console.containerPorts.console }}
+  selector:
+    {{- include "graphoenix.selectorLabels" (dict "context" . "name" .Values.console.name "component" .Values.console.name) | nindent 4 }}

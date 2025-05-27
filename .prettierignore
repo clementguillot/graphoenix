@@ -6,3 +6,5 @@ build
 /.nx/workspace-data
 pnpm-lock.yaml
 pnpm-workspace.yaml
+# Skip helm chart go-templated YAML files
+apps/helm-chart/src/templates

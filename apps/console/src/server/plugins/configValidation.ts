@@ -49,7 +49,7 @@ const GraphoenixConsoleConfig = z.object({
 const Auth0Config = z.object({
   clientId: z.string().trim().min(1),
   clientSecret: z.string().trim().min(1),
-  domain: z.string().trim().min(1).endsWith(".auth0.com"),
+  domain: z.string().trim().endsWith(".auth0.com"),
 })
 
 const GitHubConfig = z.object({

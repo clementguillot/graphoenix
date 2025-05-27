@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  {{- with (mergeOverwrite (deepCopy .Values.global.deploymentAnnotations) .Values.console.deploymentAnnotations) }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+  name: {{ template "graphoenix.console.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "graphoenix.labels" (dict "context" . "component" .Values.console.name "name" .Values.console.name) | nindent 4 }}
+
+spec:
+  {{- with include "graphoenix.strategy" (mergeOverwrite (deepCopy .Values.global.deploymentStrategy) .Values.console.deploymentStrategy) }}
+  strategy:
+    {{- trim . | nindent 4 }}
+  {{- end }}
+  replicas: {{ .Values.console.replicas }}
+  revisionHistoryLimit: {{ .Values.global.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+       {{- include "graphoenix.selectorLabels" (dict "context" . "name" .Values.console.name) | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- with (mergeOverwrite (deepCopy .Values.global.podAnnotations) .Values.console.podAnnotations) }}
+        {{- range $key, $value := . }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      labels:
+        {{- include "graphoenix.labels" (dict "context" . "component" .Values.console.name "name" .Values.console.name) | nindent 8 }}
+        {{- with (mergeOverwrite (deepCopy .Values.global.podLabels) .Values.console.podLabels) }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      automountServiceAccountToken: false
+      {{- with .Values.console.imagePullSecrets | default .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.console.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.console.terminationGracePeriodSeconds }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.console.name }}
+        image: {{ .Values.console.image.repository }}:{{ default (include "graphoenix.defaultTag" .) .Values.console.image.tag }}
+        imagePullPolicy: {{ default .Values.global.image.imagePullPolicy .Values.console.image.imagePullPolicy }}
+        env:
+          {{- with (concat .Values.global.env .Values.console.env) }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          - name: NUXT_GRAPHOENIX_SERVER
+            value: http://{{ template "graphoenix.server.fullname" . }}
+        {{- with .Values.console.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+          - mountPath: /tmp
+            name: tmp
+        ports:
+          - name: console
+            containerPort: {{ .Values.console.containerPorts.console }}
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.console.resources | nindent 10 }}
+        {{- with .Values.console.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- with include "graphoenix.affinity" (dict "context" . "component" .Values.console) }}
+      affinity:
+        {{- trim . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.nodeSelector | default .Values.global.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.tolerations | default .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: tmp
+          {{- if .Values.console.emptyDir.sizeLimit }}
+          emptyDir:
+            sizeLimit: {{ .Values.console.emptyDir.sizeLimit }}
+                {{- else }}
+          emptyDir: { }
+          {{- end }}

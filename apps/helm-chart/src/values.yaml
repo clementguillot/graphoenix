@@ -101,7 +101,7 @@ server:
 
   # -- Secrets with credentials to pull images from a private registry
   # @default -- `[]` (defaults to global.imagePullSecrets)
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
 
   # -- DB configuration when using external MongoDB
   database:
@@ -224,6 +224,121 @@ server:
     # -- Server clean-up numbers of days to truncate on
     days: 30
 
+## Console
+console:
+  # -- Graphoenix console name string
+  name: console
+
+  # -- The number of console pods to run
+  replicas: 1
+
+  ## Graphoenix server image
+  image:
+    # -- Repository to use for the Graphoenix console
+    repository: ghcr.io/clementguillot/graphoenix-console
+    # -- Tag to use for the Graphoenix console
+    # @default -- `""` (defaults to global.image.tag)
+    tag: ""
+    # -- Image pull policy for the Graphoenix console
+    # @default -- `""` (defaults to global.image.imagePullPolicy)
+    imagePullPolicy: ""
+
+  # -- Secrets with credentials to pull images from a private registry
+  # @default -- `[]` (defaults to global.imagePullSecrets)
+  imagePullSecrets: []
+
+  # -- Additional command line arguments to pass to Graphoenix console
+  extraArgs: []
+
+  # -- Environment variables to pass to Graphoenix console
+  env: []
+
+  # -- envFrom to pass to Graphoenix console
+  # @default -- `[]` (See [values.yaml])
+  envFrom: []
+  # - configMapRef:
+  #     name: config-map-name
+  # - secretRef:
+  #     name: secret-name
+
+  # -- Annotations to be added to console Deployment
+  deploymentAnnotations: {}
+
+  # -- Annotations to be added to console pods
+  podAnnotations: {}
+
+  # -- Labels to be added to console pods
+  podLabels: {}
+
+  # -- Resource limits and requests for the Graphoenix console
+  resources: {}
+  #  limits:
+  #    cpu: 500m
+  #    memory: 512Mi
+  #  requests:
+  #    cpu: 250m
+  #    memory: 256Mi
+
+  # Console container ports
+  containerPorts:
+    # -- Console container port
+    console: 3000
+
+  # -- Graphoenix console container-level security context
+  # @default -- See [values.yaml]
+  containerSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - ALL
+  # -- terminationGracePeriodSeconds for container lifecycle hook
+  terminationGracePeriodSeconds: 30
+
+  # -- [Node selector]
+  # @default -- `{}` (defaults to global.nodeSelector)
+  nodeSelector: {}
+
+  # -- [Tolerations] for use with node taints
+  # @default -- `[]` (defaults to global.tolerations)
+  tolerations: []
+
+  # -- Assign custom [affinity] rules to the deployment
+  # @default -- `{}` (defaults to global.affinity preset)
+  affinity: {}
+
+  # -- Deployment strategy to be added to the console Deployment
+  deploymentStrategy:
+    {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 25%
+  #   maxUnavailable: 25%
+
+  ## Console service configuration
+  service:
+    # -- Console service annotations
+    annotations: {}
+    # -- Console service labels
+    labels: {}
+    # -- Console service type
+    type: ClusterIP
+    # -- Console service http port
+    servicePortHttp: 80
+    # -- Console service http port name, can be used to route traffic via istio
+    servicePortHttpName: http
+
+  ## Graphoenix console emptyDir volumes
+  emptyDir:
+    # -- EmptyDir size limit for the Argo CD server
+    # @default -- `""` (defaults not set if not specified i.e. no size limit)
+    sizeLimit: ""
+    # sizeLimit: "1Gi"
+
 ## Embedded MinIO configuration (Bitnami Helm Chart)
 minio:
   # If `enabled`, Bitnami's chart is installed.
@@ -282,3 +397,9 @@ nginx:
 
   # Configuration to add to NGINX server block
   extraServerBlockConfiguration: ""
+
+  customReadinessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+      scheme: HTTP

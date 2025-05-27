@@ -7,12 +7,24 @@ to 63 chars and it includes 10 chars of hash and a separating '-'.
 {{- define "graphoenix.server.fullname" -}}
 {{- printf "%s-%s" (include "graphoenix.fullname" .) .Values.server.name | trunc 52 | trimSuffix "-" -}}
 {{- end -}}
+{{/*
+Create console name and version as used by the chart label.
+*/}}
+{{- define "graphoenix.console.fullname" -}}
+{{- printf "%s-%s" (include "graphoenix.fullname" .) .Values.console.name | trunc 52 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Create the default port of the server.
 */}}
 {{- define "graphoenix.server.port" -}}
 {{- default "80" .Values.server.service.servicePortHttp -}}
+{{- end -}}
+{{/*
+Create the default port of the console.
+*/}}
+{{- define "graphoenix.console.port" -}}
+{{- default "80" .Values.console.service.servicePortHttp -}}
 {{- end -}}
 
 {{/*

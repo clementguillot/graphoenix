@@ -21,8 +21,9 @@ Since Nx Cloud is a proprietary software from Narwhal Technologies Inc., it is h
 
 ## Project structure
 
-| Application/library                  | Summary                                                     |
-|--------------------------------------|-------------------------------------------------------------|
+| Application/library                  | Summary                                                      |
+| ------------------------------------ | ------------------------------------------------------------ |
+| [`apps/console`](apps/console)       | Frontend console (web UI) of Graphoenix.                     |
 | [`apps/helm-chart`](apps/helm-chart) | Helm Chart to deploy Graphoenix on Kubernetes                |
 | [`apps/server`](apps/server)         | Backend of Graphoenix, handles requests from Nx Cloud client |
 
