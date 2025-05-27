@@ -45,7 +45,7 @@ services:
       MINIO_ACCESS_KEY: "graphoenix"
       MINIO_SECRET_KEY: "graphoenix"
   postgres:
-    image: postgres:17.4
+    image: postgres:17.5
     environment:
       POSTGRES_PASSWORD: pg-root
     volumes:
