@@ -24,6 +24,6 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: mongodb.enabled
   - name: nginx
-    version: 20.0.3
+    version: 20.0.5
     repository: https://charts.bitnami.com/bitnami
     condition: nginx.enabled
