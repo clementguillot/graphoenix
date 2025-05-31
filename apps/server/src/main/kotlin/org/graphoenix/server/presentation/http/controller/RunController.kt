@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.graphoenix.server.application.run.usecase.*
 import org.graphoenix.server.configuration.ServerConfiguration
-import org.graphoenix.server.domain.common.pagination.PageCollection
 import org.graphoenix.server.domain.run.valueobject.Hash
 import org.graphoenix.server.domain.run.valueobject.LinkId
 import org.graphoenix.server.domain.workspace.valueobject.AccessLevel
@@ -92,7 +91,7 @@ class RunController(
     workspaceId: String,
     @RestQuery pageIndex: Int,
     @RestQuery pageSize: Int,
-  ): PageCollection<RunSimpleDto> =
+  ): PageCollectionDto<RunSimpleDto> =
     getRunPageByWorkspaceId(
       GetRunPageByWorkspaceId.Request(
         workspaceId = WorkspaceId(workspaceId),
@@ -100,7 +99,7 @@ class RunController(
         pageSize = pageSize,
       ),
     ) { response ->
-      PageCollection(
+      PageCollectionDto(
         items = response.runs.items.map { RunSimpleDto.from(it) },
         totalCount = response.runs.totalCount,
       )

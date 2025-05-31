@@ -4,9 +4,9 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.graphoenix.server.application.run.usecase.GetTaskPageByRun
-import org.graphoenix.server.domain.common.pagination.PageCollection
 import org.graphoenix.server.domain.run.valueobject.LinkId
 import org.graphoenix.server.domain.workspace.valueobject.WorkspaceId
+import org.graphoenix.server.presentation.http.controller.dto.PageCollectionDto
 import org.graphoenix.server.presentation.http.controller.dto.TaskDto
 import org.jboss.resteasy.reactive.RestQuery
 
@@ -25,7 +25,7 @@ class TaskController(
     workspaceId: String,
     @RestQuery pageIndex: Int,
     @RestQuery pageSize: Int,
-  ): PageCollection<TaskDto> =
+  ): PageCollectionDto<TaskDto> =
     getTaskPageByRun(
       GetTaskPageByRun.Request(
         runLinkId = LinkId(linkId),
@@ -34,7 +34,7 @@ class TaskController(
         pageSize = pageSize,
       ),
     ) { response ->
-      PageCollection(
+      PageCollectionDto(
         items = response.tasks.items.map { TaskDto.from(it) },
         totalCount = response.tasks.totalCount,
       )

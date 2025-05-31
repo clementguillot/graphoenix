@@ -35,14 +35,20 @@ export default defineNuxtConfig({
     // Default OAuth provider settings to ensure integration with Graphoenix
     oauth: {
       auth0: {
-        scope: ["openid", "email"],
+        emailRequired: true,
       },
       github: {
-        scope: ["user:email"],
+        emailRequired: true,
+      },
+      gitlab: {
+        emailRequired: true,
       },
       microsoft: {
         scope: ["openid", "email"],
       },
+    },
+    session: {
+      maxAge: 60 * 60, // 1 hour
     },
   },
   srcDir: "src",

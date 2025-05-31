@@ -1,12 +1,14 @@
 # apps/server
 
+The back-end of Graphoenix. The server is in charge of handling requests from the `nx daemon` (e.g. start and end runs) and from CLI commands (e.g. create org and workspace, etc.).
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+If you want to learn more about Quarkus, please visit its website: [https://quarkus.io/](https://quarkus.io/).
 
 ## Running the application in dev mode
 
-You can run your application in dev mode that enables live coding using:
+You can run the application in dev mode that enables live coding using:
 
 ```shell script
 nx serve apps/server
