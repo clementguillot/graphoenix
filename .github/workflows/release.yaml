@@ -18,6 +18,7 @@ jobs:
     strategy:
       matrix:
         include:
+          - image: ghcr.io/clementguillot/graphoenix-console
           - image: ghcr.io/clementguillot/graphoenix-server
 
     steps:
