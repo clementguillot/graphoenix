@@ -2,6 +2,39 @@ apiVersion: v1
 entries:
   graphoenix:
   - apiVersion: v2
+    appVersion: v0.7.1
+    created: "2025-06-02T12:27:02.846256524Z"
+    dependencies:
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.0.10
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.5.13
+    - condition: nginx.enabled
+      name: nginx
+      repository: https://charts.bitnami.com/bitnami
+      version: 20.0.5
+    description: Graphoenix Helm Chart
+    digest: cc0cafc7f266d2fd182937d4dc4b07265373e97cbdf089e949d49763bde36b3c
+    home: https://github.com/clementguillot/graphoenix
+    keywords:
+    - graphoenix
+    - nx
+    - cloud
+    maintainers:
+    - email: clement1.guillot@gmail.com
+      name: clementguillot
+    name: graphoenix
+    sources:
+    - https://github.com/clementguillot/graphoenix
+    type: application
+    urls:
+    - https://github.com/clementguillot/graphoenix/releases/download/graphoenix-0.7.1/graphoenix-0.7.1.tgz
+    version: 0.7.1
+  - apiVersion: v2
     appVersion: v0.7.0
     created: "2025-05-31T16:08:28.139257766Z"
     dependencies:
@@ -602,4 +635,4 @@ entries:
     urls:
     - https://github.com/clementguillot/nx-cloud-ce/releases/download/nx-cloud-ce-0.0.1/nx-cloud-ce-0.0.1.tgz
     version: 0.0.1
-generated: "2025-05-31T16:08:28.139314852Z"
+generated: "2025-06-02T12:27:02.846301929Z"
