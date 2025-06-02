@@ -43,7 +43,7 @@ dependencies {
 }
 
 group = "org.graphoenix.server.storage"
-version = "0.7.0"
+version = "0.7.1"
 
 java {
   sourceCompatibility = JavaVersion.toVersion(javaVersion)
