@@ -40,9 +40,7 @@ export default defineNuxtConfig({
       github: {
         emailRequired: true,
       },
-      gitlab: {
-        emailRequired: true,
-      },
+      gitlab: {},
       microsoft: {
         scope: ["openid", "email"],
       },
