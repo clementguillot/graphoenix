@@ -10,7 +10,7 @@ permissions: {}
 jobs:
   retag-oci-images:
     name: Re-tag OCI images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write # for creating OIDC tokens for signing.
@@ -49,7 +49,7 @@ jobs:
 
   publish-helm-charts:
     name: Publish Helm Charts
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write # for helm/chart-releaser-action to push chart release and create a release
       packages: write # to push OCI chart package to GitHub Registry
@@ -97,7 +97,7 @@ jobs:
 
   release:
     name: Create Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write # for softprops/action-gh-release to create a release
 
