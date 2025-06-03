@@ -12,20 +12,27 @@ const baseConfig: OAuthConfig<
   { user: User; tokens?: { access_token: string } }
 > = {
   async onSuccess(event, { user, tokens }) {
-    if (oauthProvider === "github" && tokens) {
-      const emails = await $fetch<{ email: string; primary: boolean }[]>(
-        "https://api.github.com/user/emails",
-        {
-          headers: {
-            authorization: `bearer ${tokens.access_token}`,
+    switch (oauthProvider) {
+      case "github": {
+        const emails = await $fetch<{ email: string; primary: boolean }[]>(
+          "https://api.github.com/user/emails",
+          {
+            headers: {
+              authorization: `bearer ${tokens.access_token}`,
+            },
           },
-        },
-      )
-      await setUserSession(event, {
-        user: { ...user, email: emails.find((e) => e.primary)?.email },
-      })
-    } else {
-      await setUserSession(event, { user })
+        )
+        await setUserSession(event, {
+          user: { ...user, email: emails.find((e) => e.primary)?.email },
+        })
+        break
+      }
+      case "microsoft":
+        await setUserSession(event, { user: { ...user, email: user.mail } })
+        break
+      default:
+        await setUserSession(event, { user })
+        break
     }
     const redirectUrl = getCookie(event, "redirectURL")
     deleteCookie(event, "redirectURL")
