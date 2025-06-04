@@ -27,7 +27,10 @@
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/src/test-setup.[jt]s"
     ],
-    "sharedGlobals": ["{workspaceRoot}/VERSION"]
+    "sharedGlobals": [
+      "{workspaceRoot}/github/workflows",
+      "{workspaceRoot}/VERSION"
+    ]
   },
   "plugins": [
     "@jnxplus/nx-gradle",
