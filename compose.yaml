@@ -71,7 +71,7 @@ services:
     ports:
       - "8090:8080"
   reverse-proxy:
-    image: nginx:1.27.5-alpine
+    image: nginx:1.29.0-alpine
     ports:
       - "10000:10000"
     volumes:
