@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:8.0.6
+    image: mongo:8.0.12
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
     ports:
       - "27017:27017"
