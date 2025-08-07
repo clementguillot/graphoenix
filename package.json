@@ -7,7 +7,7 @@
   "devDependencies": {
     "@compodium/nuxt": "0.1.0-beta.10",
     "@eslint/js": "9.27.0",
-    "@iconify-json/lucide": "1.2.44",
+    "@iconify-json/lucide": "1.2.61",
     "@jnxplus/nx-gradle": "1.17.0",
     "@nuxt/devtools": "2.4.1",
     "@nuxt/eslint-config": "1.4.1",
