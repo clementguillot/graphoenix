@@ -28,7 +28,7 @@ dependencies {
 }
 
 group = "org.graphoenix.server"
-version = "0.7.2"
+version = "0.7.3"
 
 java {
   sourceCompatibility = JavaVersion.toVersion(javaVersion)
