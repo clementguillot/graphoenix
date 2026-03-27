@@ -17,7 +17,7 @@ class GcsEmulatorResource : QuarkusTestResourceLifecycleManager {
 
   override fun start(): Map<String, String> {
     container =
-      GenericContainer("fsouza/fake-gcs-server:1.49.3")
+      GenericContainer("fsouza/fake-gcs-server:1.54.0")
         .withExposedPorts(4443)
         .withCommand("-scheme", "http")
     container.start()
