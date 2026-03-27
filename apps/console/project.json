@@ -2,7 +2,7 @@
   "name": "apps/console",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/console/src",
+  "sourceRoot": "apps/console/app",
   "targets": {
     "container": {
       "executor": "@nx-tools/nx-container:build",

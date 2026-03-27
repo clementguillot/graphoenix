@@ -2,7 +2,7 @@
 import { defineVitestConfig } from "@nuxt/test-utils/config"
 
 export default defineVitestConfig({
-  root: __dirname,
+  root: import.meta.dirname,
   cacheDir: "../../node_modules/.vite/apps/console",
   // plugins: [vue(), nxViteTsPaths(), nxCopyAssetsPlugin(["*.md"])],
   // Uncomment this if you are using workers.
@@ -32,7 +32,9 @@ export default defineVitestConfig({
     //   },
     // },
     // environment: "jsdom",
-    include: ["{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    include: [
+      "{app,server,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     reporters: ["default"],
     coverage: {
       reportsDirectory: "../../coverage/apps/console",
