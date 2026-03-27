@@ -2,7 +2,7 @@ quarkus:
   aws:
     devservices:
       localstack:
-        image-name: localstack/localstack:3.7.1
+        image-name: localstack/localstack:4.14.0
   s3:
     devservices:
       enabled: true

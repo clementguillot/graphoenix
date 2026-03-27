@@ -6,7 +6,7 @@ runs:
   steps:
     - uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
       with:
-        java-version: '21.0.2'
+        java-version: '25.0.2'
         distribution: 'graalvm-community'
 
     - name: Set up Helm

@@ -30,7 +30,10 @@ inline fun <T> BsonReader.readNullableField(
       readNull()
       null
     }
-    else -> reader()
+
+    else -> {
+      reader()
+    }
   }
 }
 

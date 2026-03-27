@@ -63,8 +63,14 @@ class ArtifactPanacheRepository :
   override suspend fun delete(artifactId: ArtifactId): Boolean =
     delete(ArtifactEntity::artifactId.name, artifactId.value).awaitSuspending().let {
       when (it) {
-        0L -> false
-        1L -> true
+        0L -> {
+          false
+        }
+
+        1L -> {
+          true
+        }
+
         else -> {
           logger.warn("$it artifacts were deleted, was expecting only 1, DB indexes should be checked")
           true

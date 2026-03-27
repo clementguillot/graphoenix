@@ -1,5 +1,7 @@
 package org.graphoenix.server.storage.gcs
 
+import com.google.auth.Credentials
+import com.google.auth.ServiceAccountSigner
 import com.google.cloud.storage.*
 import io.quarkus.arc.lookup.LookupIfProperty
 import jakarta.enterprise.context.ApplicationScoped
@@ -12,6 +14,7 @@ import java.util.concurrent.TimeUnit
 class GcsRepository(
   gcsConfiguration: GcsConfiguration,
   private val storage: Storage,
+  credentials: Credentials,
 ) : FileRepository {
   companion object {
     private val presignExpirationDuration = 1L
@@ -20,9 +23,20 @@ class GcsRepository(
 
   init {
     require(gcsConfiguration.bucket().isPresent)
+    require(credentials is ServiceAccountSigner) { "GCS credentials must be a ServiceAccountSigner for URL signing" }
   }
 
   private val bucket = gcsConfiguration.bucket().get()
+  private val signer = credentials as ServiceAccountSigner
+  private val signUrlOptions: Array<Storage.SignUrlOption> =
+    buildList {
+      add(Storage.SignUrlOption.withV4Signature())
+      add(Storage.SignUrlOption.signWith(signer))
+      val host = storage.options?.host
+      if (host != null) {
+        add(Storage.SignUrlOption.withHostName(host))
+      }
+    }.toTypedArray()
 
   override suspend fun generateGetUrl(objectPath: String): String =
     coroutineScope {
@@ -34,7 +48,7 @@ class GcsRepository(
             presignExpirationDuration,
             presignExpirationTimeUnit,
             Storage.SignUrlOption.httpMethod(HttpMethod.GET),
-            Storage.SignUrlOption.withV4Signature(),
+            *signUrlOptions,
           )
         url.toString()
       }
@@ -50,7 +64,7 @@ class GcsRepository(
             presignExpirationDuration,
             presignExpirationTimeUnit,
             Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
-            Storage.SignUrlOption.withV4Signature(),
+            *signUrlOptions,
           )
         url.toString()
       }
