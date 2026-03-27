@@ -5,7 +5,7 @@
   "scripts": {},
   "private": true,
   "devDependencies": {
-    "@compodium/nuxt": "0.1.0-beta.10",
+    "@compodium/nuxt": "0.1.0-beta.12",
     "@eslint/js": "9.27.0",
     "@iconify-json/lucide": "1.2.44",
     "@jnxplus/nx-gradle": "1.17.0",
