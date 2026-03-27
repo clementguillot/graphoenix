@@ -36,7 +36,7 @@
     "@vueuse/nuxt": "13.2.0",
     "eslint": "9.27.0",
     "eslint-config-prettier": "10.1.5",
-    "h3": "1.15.3",
+    "h3": "1.15.9",
     "happy-dom": "17.4.7",
     "jiti": "2.4.2",
     "jsdom": "26.1.0",
