@@ -46,10 +46,10 @@ export default defineNuxtConfig({
       },
     },
     session: {
+      password: "1234567890",
       maxAge: 60 * 60, // 1 hour
     },
   },
-  srcDir: "src",
   workspaceDir: "../../",
 
   devServer: {
@@ -70,6 +70,11 @@ export default defineNuxtConfig({
     typeCheck: true,
     tsConfig: {
       extends: "../tsconfig.app.json", // Nuxt copies this string as-is to the `./.nuxt/tsconfig.json`, therefore it needs to be relative to that directory
+      compilerOptions: {
+        composite: false,
+        declarationMap: false,
+        emitDeclarationOnly: false,
+      },
     },
   },
 })

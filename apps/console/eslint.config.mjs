@@ -3,11 +3,24 @@ import baseConfig from "../../eslint.config.mjs"
 
 export default createConfigForNuxt({
   features: {
-    nuxt: {
-      sortConfigKeys: true,
+    typescript: true,
+  },
+})
+  .prepend(...baseConfig)
+  .append(
+    {
+      files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.vue"],
+      rules: {
+        "vue/multi-word-component-names": "off",
+      },
     },
-  },
-  dirs: {
-    src: ["src"],
-  },
-}).prepend(...baseConfig)
+    {
+      ignores: [
+        ".nuxt/**",
+        ".output/**",
+        "node_modules",
+        "**/*.d.ts",
+        "**/*.vue.js",
+      ],
+    },
+  )
