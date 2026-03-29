@@ -4,7 +4,7 @@ description: 'Setup of common build tools and environment variables.'
 runs:
   using: 'composite'
   steps:
-    - uses: graalvm/setup-graalvm@01ed653ac833fe80569f1ef9f25585ba2811baab # v1.3.3
+    - uses: graalvm/setup-graalvm@f744c72a42b1995d7b0cbc314bde4bace7ac1fe1 # v1.5.0
       with:
         java-version: '25.0.2'
         distribution: 'graalvm-community'
