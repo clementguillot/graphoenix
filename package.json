@@ -13,7 +13,7 @@
     "@nuxt/eslint-config": "1.15.2",
     "@nuxt/kit": "4.4.2",
     "@nuxt/test-utils": "4.0.0",
-    "@nuxt/ui": "4.6.0",
+    "@nuxt/ui": "4.8.1",
     "@nx-tools/container-metadata": "7.2.1",
     "@nx-tools/nx-container": "7.2.1",
     "@nx/eslint": "22.6.3",
